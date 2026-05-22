@@ -1,0 +1,6 @@
+pyproject.toml
+src/autonomedia.egg-info/PKG-INFO
+src/autonomedia.egg-info/SOURCES.txt
+src/autonomedia.egg-info/dependency_links.txt
+src/autonomedia.egg-info/requires.txt
+src/autonomedia.egg-info/top_level.txt

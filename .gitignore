@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.python-version
+
+# Tooling
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# Virtual env
+.venv/
+
+# Runtime state
+runtime/
+artifacts/
+storage/logs/
+storage/screenshots/
+
+# Browser automation
+playwright/.auth/
+browser_data/
+*.sqlite
+*.db
+*.ldb
+
+# Chromium / Playwright
+LOCK
+LOG
+LOG.old
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
