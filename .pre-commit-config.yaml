@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: check-for-sensitive-files
+        name: Check for sensitive runtime artifacts
+        entry: bash -c 'git diff --cached --name-only | grep -E "^(runtime/|browser_data/|\.env|.*\.db|.*\.cache)" && exit 1 || exit 0'
+        language: system
+        pass_filenames: false

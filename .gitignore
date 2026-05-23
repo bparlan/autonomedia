@@ -31,9 +31,6 @@ LOCK
 LOG
 LOG.old
 
-# macOS
-.DS_Store
-
 # IDE
 .vscode/
 .idea/
@@ -41,3 +38,21 @@ LOG.old
 # Secrets
 .env
 .env.*
+
+# Runtime execution state
+runtime/
+browser_data/
+artifacts/
+storage/
+screenshots/
+
+# Chromium / Playwright / automation profiles
+**/profiles/
+**/sessions/
+**/user-data-dir/
+*.session
+*.lock
+*.log
+
+# OS / noise
+.DS_Store
