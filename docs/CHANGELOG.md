@@ -8,14 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- 
+- BrowserProvider for centralized session/artifact lifecycle management
+- Platform Registry pattern in worker orchestrator
+- Centralized configuration settings
 
 ### Changed
-- 
+- Refactored Mastodon task handler to use BrowserProvider
+- Removed unused browser/session/stealth subdirectories
+- Refactored core/worker.py routing
 
 ### Fixed
-- 
-
+- Failure artifact (screenshot) capturing on exception
 ## [0.5.0] — 2026-05-23
 
 ### Added

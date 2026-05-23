@@ -17,11 +17,18 @@ logger = logging.getLogger("worker")
 
 MAX_RETRIES = 3
 
+# Platform Registry
+PLATFORM_HANDLERS = {
+    "mastodon": publish_mastodon,
+}
+
 async def execute_task(task):
-    """Executes the task logic with platform routing."""
-    if task.get("platform") == "mastodon":
-        return await publish_mastodon(task.get("content"))
-    raise ValueError(f"Unknown platform: {task.get('platform')}")
+    """Executes the task logic with platform routing via registry."""
+    handler = PLATFORM_HANDLERS.get(task.get("platform"))
+    if not handler:
+        raise ValueError(f"Unknown platform: {task.get('platform')}")
+    # Pass task_id for failure artifact capturing
+    return await handler(task.get("content"), task.get("id"))
 
 async def worker(name, queue):
     """

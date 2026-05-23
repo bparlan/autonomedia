@@ -31,17 +31,16 @@ status: active
 
 ---
 
-## M6 — AI Rewrite Layer
+## M5X — Critical Review Fix
+- **Status**: COMPLETE
+- **Completed**: 2026-05-23
+- **Objective**: Remediate architectural risks and deduplicate logic.
 
-- **Status**: IN PROGRESS
-- **Started**: 2026-05-23
-- **Objective**: Integrate AI content rewriting pipeline
+### Tasks
+- [x] Implement `BrowserProvider`.
+- [x] Implement Registry Pattern for workers.
+- [x] Refactor Mastodon Handler.
+- [x] Validate and Cleanup phantom dirs.
+- [x] Centralize Configuration.
+- [x] Add failure artifact capturing.
 
-### Planned
-- [ ] OpenRouter transforms
-- [ ] Prompt templating
-- [ ] Rewrite evaluation layer
-- [ ] Content moderation pipeline
-
-### Blockers
-- None
