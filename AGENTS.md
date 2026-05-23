@@ -217,6 +217,16 @@ Every successful post should capture:
 
 ---
 
+# GIT POLICY
+
+* Agents MUST NOT execute `git commit` or `git push`
+* Agents MAY suggest `git` commands for human execution
+* `CHANGELOG.md` must be updated before staging.
+* `progress.md` is operational memory and must track milestone state.
+* Runtime directories are never versioned
+
+---
+
 # FUTURE EXPANSION TARGETS
 
 Expected future modules:
