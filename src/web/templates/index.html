@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Autonomedia Dashboard</title>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; padding: 20px; background: #f9fafb; color: #111827; font-size: 14px; }
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); table-layout: fixed; }
+        th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; vertical-align: top; word-wrap: break-word; }
+        th { background: #f3f4f6; font-weight: 600; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1); }
+        
+        .col-context { width: 25%; }
+        .col-idea { width: 30%; }
+        .col-preview { width: 40%; }
+        .col-actions { width: 5%; text-align: center; }
+
+        .type-badge { background: #fef3c7; color: #b45309; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 600; border: 1px solid #fde68a; }
+        .tag { background: #e0e7ff; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; margin-right: 2px; display: inline-block; }
+        .mention { background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; margin-right: 2px; display: inline-block; }
+        
+        .preview-box { background: #1f2937; color: #f3f4f6; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 0.9em; white-space: pre-wrap; margin: 0;}
+        
+        .btn { cursor: pointer; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; background: white; font-weight: 500; }
+        .btn:hover { background: #f3f4f6; }
+        .btn-primary { background: #2563eb; color: white; border: none; }
+        .btn-primary:hover { background: #1d4ed8; }
+        
+        .controls-cell { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 15px; }
+        .btn-icon { padding: 6px; font-size: 1.2em; cursor: pointer; background: transparent; border: 1px solid #e5e7eb; border-radius: 4px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+        .btn-icon:hover { background: #f3f4f6; }
+        .row-approved { background-color: #f0fdf4 !important; }
+        .row-approved td { border-color: #bbf7d0; }
+    </style>
+</head>
+<body>
+    <h1>Autonomedia Assembly Dashboard</h1>
+    <form action="/add" method="POST" style="display:flex; flex-direction: column; gap: 5px; background: #e5e7eb; padding: 10px; border-radius: 6px; margin-bottom: 20px;">
+        <div style="display: flex; gap: 5px;">
+            <input type="text" name="topic" placeholder="Topic" required style="padding: 5px;" minlength="3">
+            <select name="type" required style="padding: 5px;">
+                <option value="RefLink">RefLink</option>
+                <option value="SelfPromotion">SelfPromotion</option>
+                <option value="Social">Social</option>
+            </select>
+            <input type="url" name="link_url" placeholder="https://..." required style="padding: 5px; flex-grow: 1;">
+        </div>
+        <input type="text" name="source_idea" placeholder="Idea (Source)" required style="padding: 5px;" minlength="5">
+        <div style="display: flex; gap: 5px;">
+            <input type="text" name="hashtags" placeholder="Hashtags (comma-separated)" style="padding: 5px; flex-grow: 1;">
+            <input type="text" name="mentions" placeholder="Mentions (comma-separated)" style="padding: 5px; flex-grow: 1;">
+            <button class="btn btn-primary" type="submit">Add Content</button>
+        </div>
+    </form>
+    
+    <table>
+        <thead>
+            <tr>
+                <th class="col-context">Context & Variables</th>
+                <th class="col-idea">Source Idea</th>
+                <th class="col-preview">Assembly Preview (Mock)</th>
+                <th class="col-actions">Control</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in content %}
+                {% include 'partials/row.html' %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

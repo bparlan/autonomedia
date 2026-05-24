@@ -10,9 +10,12 @@ Implement a robust, asynchronous worker runtime that consumes publishing tasks f
 4. **Session Management**: Persistent browser context handling (leveraging M2/M3 findings).
 5. **Scheduler (APScheduler)**: For future-proofing task timing.
 
-## Phases
-1. [ ] **Foundation**: Setup `asyncio` task loop and queue structure.
-2. [ ] **Task Definition**: Standardize the publishing task schema.
-3. [ ] **Worker Logic**: Migrate the "post" logic into a reusable worker function.
-4. [ ] **Observability**: Integrate structured JSON logging into the worker loop.
-5. [ ] **Verification**: Add retries and error handling for failed tasks.
+## M52 — Critical Review Fix
+**Objective**: Remediate architectural risks (platform routing, browser lifecycle).
+
+### Phases
+1. [ ] **Foundation**: BrowserProvider Implementation.
+2. [ ] **Registry**: Platform Registry & Orchestration.
+3. [ ] **Observability**: Error Handling & Artifact Capture.
+4. [ ] **Refactor**: Mastodon Handler conversion.
+5. [ ] **Verification**: Final Cleanup.

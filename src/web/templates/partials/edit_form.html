@@ -1,0 +1,22 @@
+<tr>
+    <td colspan="4">
+        <form hx-post="/save-row/{{ item.id }}" hx-target="closest tr" hx-swap="outerHTML" style="display:flex; flex-direction: column; gap: 5px; padding: 5px;">
+            <div style="display: flex; gap: 5px;">
+                <input type="text" name="topic" value="{{ item.topic }}" required style="width: 20%; padding: 4px;">
+                <select name="type" required style="width: 15%; padding: 4px;">
+                    <option value="RefLink" {% if item.type == 'RefLink' %}selected{% endif %}>RefLink</option>
+                    <option value="SelfPromotion" {% if item.type == 'SelfPromotion' %}selected{% endif %}>SelfPromotion</option>
+                    <option value="Social" {% if item.type == 'Social' %}selected{% endif %}>Social</option>
+                </select>
+                <input type="text" name="link_url" value="{{ item.link_url }}" required style="width: 65%; padding: 4px;">
+            </div>
+            <input type="text" name="source_idea" value="{{ item.source_idea }}" required style="padding: 4px;">
+            <div style="display: flex; gap: 5px;">
+                <input type="text" name="hashtags" value="{{ (item.hashtags | fromjson) | join(', ') }}" placeholder="Hashtags" style="width: 50%; padding: 4px;">
+                <input type="text" name="mentions" value="{{ (item.mentions | fromjson).get('default', []) | join(', ') }}" placeholder="Mentions" style="width: 50%; padding: 4px;">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" class="btn" hx-get="/cancel-edit/{{ item.id }}" hx-target="closest tr" hx-swap="outerHTML">Cancel</button>
+            </div>
+        </form>
+    </td>
+</tr>

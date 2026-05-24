@@ -46,6 +46,15 @@ Not orchestration.
 
 ---
 
+## Safety Protocols (Hardened/Permanent)
+
+- **Read-First Mandate**: Before using `write` or `edit` on ANY existing file, you MUST `read` it first. No exceptions.
+- **Edit-Only Constraint**: `write` is PERMITTED ONLY for new files. `edit` is the ONLY valid method for modifying existing files. Patch or append rather than overwrite.
+- **Pre-flight Snapshot**: Before any modification to a project-critical file, run `cp filename filename.bak` or verify via `git status`. Always perform this "Safety Snapshot" step immediately before the `edit` operation.
+- **Append-First Philosophy**: For logging (`progress.md`) or documentation (`task_plan.md`), always prefer appending/patching over overwriting.
+
+---
+
 ## Deterministic Execution
 
 Every posting task must:

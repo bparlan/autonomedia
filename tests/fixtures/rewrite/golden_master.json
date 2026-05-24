@@ -1,0 +1,28 @@
+[
+  {
+    "id": "001",
+    "metadata": {
+      "topic": "BariaDAO",
+      "type": "SelfPromotion",
+      "platform": "mastodon"
+    },
+    "input": {
+      "text": "I’m developing @BariaDAO as an evolving experiment in #CollectiveIntelligence - not a product to ship, but a process to grow. What happens when coordination is allowed to mature instead of rush? ⬇ https://baria.bparlan.com Make sure to subscribe to newsletter for future updates!",
+      "prompt": "Rewrite this for a more professional, concise tone while keeping the CTA."
+    },
+    "expected_output_fragment": "experiment in #CollectiveIntelligence"
+  },
+  {
+    "id": "002",
+    "metadata": {
+      "topic": "Lombard Ref",
+      "type": "RefLink",
+      "platform": "mastodon"
+    },
+    "input": {
+      "text": "Every Thursday I convert dusts and leftover tokens into $LBTC & stake into vault. Those sats are for my retirement... Stake your $BTC with @Lombard_Finance for being future-proof.",
+      "prompt": "Rewrite this to be more casual and community-focused."
+    },
+    "expected_output_fragment": "@Lombard_Finance"
+  }
+]

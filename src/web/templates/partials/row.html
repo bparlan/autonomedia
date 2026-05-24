@@ -1,0 +1,72 @@
+<tr class="{% if item.status == 'approved' %}row-approved{% endif %}">
+    <td>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <strong>#{{ item.id }} - {{ item.topic }}</strong>
+            <span class="type-badge">{{ item.type }}</span>
+        </div>
+        
+        {% if item.link_url %}
+            <div style="margin-bottom: 6px; font-size: 0.9em;">🔗 <a href="{{ item.link_url }}" target="_blank">{{ item.link_url }}</a></div>
+        {% endif %}
+        
+        <div style="margin-bottom: 4px;">
+            {% set tags = (item.hashtags | fromjson) or [] %}
+            {% for tag in tags %}
+                <span class="tag">{{ tag }}</span>
+            {% endfor %}
+        </div>
+        
+        <div>
+            {% set mentions = (item.mentions | fromjson) or {} %}
+            {% if mentions is mapping %}
+                {% for platform, platform_mentions in mentions.items() %}
+                    {% for m in platform_mentions %}
+                        <span class="mention">{{ m }} ({{ platform }})</span>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </td>
+
+    <td>
+        <div style="line-height: 1.4;">{{ item.source_idea or '' }}</div>
+    </td>
+
+    <td>
+        <div class="preview-box">--AI Rewrite Here--
+
+{% set tags = (item.hashtags | fromjson) or [] %}
+{% for tag in tags %}{{ tag }} {% endfor %}
+{% set mentions = (item.mentions | fromjson) or {} %}
+{% if mentions is mapping %}
+{% for platform, platform_mentions in mentions.items() %}{% for m in platform_mentions %}{{ m }} {% endfor %}{% endfor %}
+{% endif %}
+
+⬇ {{ item.link_url or '' }}</div>
+    </td>
+
+    <td class="controls-cell">
+        <input type="checkbox" class="status-checkbox"
+               hx-post="/toggle-status/{{ item.id }}" 
+               hx-target="closest tr"
+               hx-swap="outerHTML" 
+               {% if item.status == 'approved' %}checked{% endif %}>
+
+        {% if item.status != 'approved' %}
+        <button class="btn-icon" 
+                hx-get="/edit-row/{{ item.id }}" 
+                hx-target="closest tr" 
+                hx-swap="outerHTML"
+                title="Edit">✎</button>
+        
+        <button class="btn-icon btn-danger" 
+                hx-delete="/delete-item/{{ item.id }}" 
+                hx-confirm="Delete '{{ item.topic }}'?" 
+                hx-target="closest tr" 
+                hx-swap="outerHTML"
+                title="Delete">🗑</button>
+        {% else %}
+        <span style="color: #065f46; font-size: 0.8em; font-weight: bold; background: #d1fae5; padding: 4px; border-radius: 4px;">LOCKED</span>
+        {% endif %}
+    </td>
+</tr>

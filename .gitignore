@@ -56,3 +56,5 @@ screenshots/
 
 # OS / noise
 .DS_Store
+*.bak
+*.bak/
