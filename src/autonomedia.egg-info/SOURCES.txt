@@ -9,8 +9,10 @@ src/autonomedia.egg-info/top_level.txt
 src/autonomedia/agents/__init__.py
 src/autonomedia/agents/analytics_assistant/__init__.py
 src/autonomedia/agents/posting_secretary/__init__.py
+src/autonomedia/agents/posting_secretary/worker.py
 src/autonomedia/ai/__init__.py
 src/autonomedia/ai/moderation/__init__.py
+src/autonomedia/ai/moderation/adapter.py
 src/autonomedia/ai/ollama/__init__.py
 src/autonomedia/ai/openrouter/__init__.py
 src/autonomedia/ai/rewriting/__init__.py
@@ -21,6 +23,7 @@ src/autonomedia/apps/cli/__init__.py
 src/autonomedia/apps/dashboard/__init__.py
 src/autonomedia/apps/scheduler/__init__.py
 src/autonomedia/apps/worker/__init__.py
+src/autonomedia/apps/worker/posting_executor.py
 src/autonomedia/browser/__init__.py
 src/autonomedia/browser/provider.py
 src/autonomedia/content/__init__.py
@@ -29,12 +32,15 @@ src/autonomedia/content/scheduling/__init__.py
 src/autonomedia/content/templates/__init__.py
 src/autonomedia/content/transforms/__init__.py
 src/autonomedia/core/__init__.py
+src/autonomedia/core/logger.py
 src/autonomedia/core/worker.py
 src/autonomedia/core/analytics/__init__.py
 src/autonomedia/core/config/__init__.py
 src/autonomedia/core/config/settings.py
 src/autonomedia/core/db/__init__.py
 src/autonomedia/core/observability/__init__.py
+src/autonomedia/core/observability/monitor.py
+src/autonomedia/core/observability/telegram.py
 src/autonomedia/core/utils/__init__.py
 src/autonomedia/platforms/__init__.py
 src/autonomedia/platforms/bluesky/__init__.py

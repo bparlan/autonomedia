@@ -1,4 +1,4 @@
-<tr class="{% if item.status == 'approved' %}row-approved{% endif %}">
+<tr class="{% if item.status == 'approved' %}row-approved{% elif item.status == 'prepared' %}row-prepared{% endif %}">
     <td>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
             <strong>#{{ item.id }} - {{ item.topic }}</strong>
@@ -6,7 +6,7 @@
         </div>
         
         {% if item.link_url %}
-            <div style="margin-bottom: 6px; font-size: 0.9em;">🔗 <a href="{{ item.link_url }}" target="_blank">{{ item.link_url }}</a></div>
+            <div style="margin-bottom: 6px; font-size: 0.9em;">🔗 <a href="{{ item.link_url }}" target="_blank" style="color: #2563eb; text-decoration: none;">{{ item.link_url }}</a></div>
         {% endif %}
         
         <div style="margin-bottom: 4px;">
@@ -16,7 +16,7 @@
             {% endfor %}
         </div>
         
-        <div>
+        <div style="margin-bottom: 4px;">
             {% set mentions = (item.mentions | fromjson) or {} %}
             {% if mentions is mapping %}
                 {% for platform, platform_mentions in mentions.items() %}
@@ -26,6 +26,13 @@
                 {% endfor %}
             {% endif %}
         </div>
+        
+        <div>
+            {% set platforms = (item.platforms | fromjson) or ['mastodon'] %}
+            {% for plat in platforms %}
+                <span style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">{{ plat }}</span>
+            {% endfor %}
+        </div>
     </td>
 
     <td>
@@ -33,40 +40,65 @@
     </td>
 
     <td>
-        <div class="preview-box">--AI Rewrite Here--
-
-{% set tags = (item.hashtags | fromjson) or [] %}
-{% for tag in tags %}{{ tag }} {% endfor %}
-{% set mentions = (item.mentions | fromjson) or {} %}
-{% if mentions is mapping %}
-{% for platform, platform_mentions in mentions.items() %}{% for m in platform_mentions %}{{ m }} {% endfor %}{% endfor %}
-{% endif %}
-
-⬇ {{ item.link_url or '' }}</div>
+        {% if item.status == 'idea' or item.status == 'approved' %}
+            <div class="preview-box" style="color: #9ca3af;">-- Awaiting Generation --</div>
+        {% elif item.status == 'failed' %}
+            <div class="preview-box" style="background: #fee2e2; color: #991b1b; border: 1px solid #f87171;">
+                <strong>Error:</strong><br/>{{ item.error_log }}
+            </div>
+        {% else %}
+            {% set prepared = (item.prepared_content | fromjson) if item.prepared_content else {} %}
+            {% if prepared is mapping %}
+                {% for platform, content in prepared.items() %}
+                <div style="margin-bottom: 5px; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px;">
+                    <strong style="font-size: 0.8em; text-transform: capitalize; color: #4b5563;">{{ platform }}</strong>
+                    <div class="preview-box">{{ content }}</div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="preview-box">{{ item.prepared_content }}</div>
+            {% endif %}
+        {% endif %}
     </td>
 
     <td class="controls-cell">
-        <input type="checkbox" class="status-checkbox"
-               hx-post="/toggle-status/{{ item.id }}" 
-               hx-target="closest tr"
-               hx-swap="outerHTML" 
-               {% if item.status == 'approved' %}checked{% endif %}>
-
-        {% if item.status != 'approved' %}
-        <button class="btn-icon" 
-                hx-get="/edit-row/{{ item.id }}" 
-                hx-target="closest tr" 
-                hx-swap="outerHTML"
-                title="Edit">✎</button>
-        
-        <button class="btn-icon btn-danger" 
-                hx-delete="/delete-item/{{ item.id }}" 
-                hx-confirm="Delete '{{ item.topic }}'?" 
-                hx-target="closest tr" 
-                hx-swap="outerHTML"
-                title="Delete">🗑</button>
-        {% else %}
-        <span style="color: #065f46; font-size: 0.8em; font-weight: bold; background: #d1fae5; padding: 4px; border-radius: 4px;">LOCKED</span>
+        {% if item.status == 'idea' %}
+            <button class="btn btn-primary" style="font-size: 0.8em;"
+                    hx-post="/toggle-status/{{ item.id }}" 
+                    hx-target="closest tr"
+                    hx-swap="outerHTML">Approve</button>
+            <button class="btn-icon" 
+                    hx-get="/edit-row/{{ item.id }}" 
+                    hx-target="closest tr" 
+                    hx-swap="outerHTML"
+                    title="Edit">✎</button>
+            <button class="btn-icon btn-danger" 
+                    hx-delete="/delete-item/{{ item.id }}" 
+                    hx-confirm="Delete '{{ item.topic }}'?" 
+                    hx-target="closest tr" 
+                    hx-swap="outerHTML"
+                    title="Delete">🗑</button>
+                    
+        {% elif item.status == 'approved' %}
+            <span style="color: #065f46; font-size: 0.8em; font-weight: bold; background: #d1fae5; padding: 4px; border-radius: 4px; text-align: center;">GENERATING<br>...</span>
+            
+        {% elif item.status == 'prepared' %}
+            <button class="btn" style="background: #10b981; color: white; border: none; font-size: 0.8em;"
+                    hx-get="/review-post/{{ item.id }}" 
+                    hx-target="closest tr" 
+                    hx-swap="outerHTML">Review Post</button>
+            <button class="btn-icon" style="margin-top: 5px;"
+                    hx-post="/toggle-status/{{ item.id }}" 
+                    hx-target="closest tr"
+                    hx-swap="outerHTML"
+                    title="Back to Idea">↺</button>
+                    
+        {% elif item.status == 'ready_to_post' %}
+            <span style="color: #1e40af; font-size: 0.8em; font-weight: bold; background: #dbeafe; padding: 4px; border-radius: 4px; text-align: center;">QUEUED</span>
+            
+        {% elif item.status == 'published' %}
+            <span style="color: #ffffff; font-size: 0.8em; font-weight: bold; background: #059669; padding: 4px; border-radius: 4px; text-align: center;">PUBLISHED ✓</span>
+            
         {% endif %}
     </td>
 </tr>

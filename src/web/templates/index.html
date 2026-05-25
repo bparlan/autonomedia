@@ -46,7 +46,11 @@
             <input type="url" name="link_url" placeholder="https://..." required style="padding: 5px; flex-grow: 1;">
         </div>
         <input type="text" name="source_idea" placeholder="Idea (Source)" required style="padding: 5px;" minlength="5">
-        <div style="display: flex; gap: 5px;">
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <label style="font-weight: 500;">Platforms:</label>
+            <label><input type="checkbox" name="platforms" value="mastodon" checked> Mastodon</label>
+            <label><input type="checkbox" name="platforms" value="x"> X (Twitter)</label>
+            <label><input type="checkbox" name="platforms" value="linkedin"> LinkedIn</label>
             <input type="text" name="hashtags" placeholder="Hashtags (comma-separated)" style="padding: 5px; flex-grow: 1;">
             <input type="text" name="mentions" placeholder="Mentions (comma-separated)" style="padding: 5px; flex-grow: 1;">
             <button class="btn btn-primary" type="submit">Add Content</button>

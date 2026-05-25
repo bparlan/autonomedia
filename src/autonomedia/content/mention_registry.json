@@ -1,0 +1,29 @@
+{
+  "entities": {
+    "autonomedia": {
+      "display_name": "Autonomedia",
+      "platforms": {
+        "mastodon": "@autonomedia@social.coop",
+        "twitter": "@autonomedia",
+        "x": "@autonomedia"
+      }
+    },
+    "openai": {
+      "display_name": "OpenAI",
+      "platforms": {
+        "linkedin": "OpenAI",
+        "x": "@OpenAI"
+      }
+    },
+    "Lombard Finance": {
+      "display_name": "Lombard Finance",
+      "platforms": {
+        "x":"@Lombard_Finance"
+      }
+    }
+  },
+  "policy": {
+    "fallback_to_plaintext": true,
+    "strict_tagging": true
+  }
+}

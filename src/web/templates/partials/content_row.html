@@ -1,0 +1,66 @@
+<tr class="hover:bg-gray-800 transition-colors group" id="row-{{ item.id }}">
+    <td class="p-4 align-top w-1/4">
+        <div class="font-bold text-gray-100 mb-1 flex items-center flex-wrap gap-2">
+            <span>#{{ item.id }} - {{ item.topic }}</span>
+            <span class="bg-yellow-900 text-yellow-200 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded tracking-wide">{{ item.type }}</span>
+        </div>
+        
+        {% if item.link_url %}
+            <div class="text-xs text-blue-400 mb-2 truncate max-w-[250px]"><a href="{{ item.link_url }}" target="_blank" class="hover:underline">🔗 {{ item.link_url }}</a></div>
+        {% endif %}
+    </td>
+    
+    <td class="p-4 align-top w-1/2">
+        <p class="text-gray-300 leading-relaxed text-sm">{{ item.source_idea }}</p>
+        
+        <!-- Metadata -->
+        <div class="mt-2 flex flex-wrap gap-1">
+            {% set tags = (item.hashtags | fromjson) or [] %}
+            {% for tag in tags %}
+                <span class="bg-blue-900 text-blue-200 text-[11px] px-1.5 py-0.5 rounded font-medium">{{ tag }}</span>
+            {% endfor %}
+        </div>
+    </td>
+    
+    <td class="p-4 align-top"
+        {% if item.status in ['approved', 'rewriting'] %}hx-get="/status-fragment/{{ item.id }}" hx-trigger="every 5s" hx-swap="outerHTML" hx-target="closest tr"{% endif %}>
+        {% if item.status == 'idea' %}
+            <span class="bg-gray-800 text-gray-300 border border-gray-700 px-2 py-1 rounded text-xs font-bold uppercase">Idea</span>
+        {% elif item.status == 'approved' %}
+            <span class="bg-indigo-900 text-indigo-200 border border-indigo-800 px-2 py-1 rounded text-xs font-bold uppercase animate-pulse">Generating</span>
+        {% elif item.status == 'rewriting' %}
+            <span class="bg-purple-900 text-purple-200 border border-purple-800 px-2 py-1 rounded text-xs font-bold uppercase animate-pulse">Rewriting...</span>
+        {% elif item.status == 'prepared' %}
+            <span class="bg-yellow-900 text-yellow-200 border border-yellow-800 px-2 py-1 rounded text-xs font-bold uppercase">Verification Needed</span>
+        {% elif item.status == 'ready_to_post' %}
+            <span class="bg-blue-900 text-blue-200 border border-blue-800 px-2 py-1 rounded text-xs font-bold uppercase">Queued</span>
+        {% elif item.status == 'published' %}
+            <span class="bg-emerald-900 text-emerald-200 border border-emerald-800 px-2 py-1 rounded text-xs font-bold uppercase">Published ✓</span>
+        {% elif item.status == 'failed' %}
+            <span class="bg-red-900 text-red-200 border border-red-800 px-2 py-1 rounded text-xs font-bold uppercase">Failed ✕</span>
+        {% endif %}
+    </td>
+    
+    <td class="p-4 align-top w-32">
+        <div class="flex flex-col gap-2">
+            {% if item.status == 'idea' %}
+                <button hx-post="/approve-idea/{{ item.id }}" hx-target="#row-{{ item.id }}" hx-swap="outerHTML" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow-sm transition-colors mb-2">Approve</button>
+                <button hx-get="/edit-content-row/{{ item.id }}" hx-target="#row-{{ item.id }}" hx-swap="outerHTML" class="w-full bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1.5 rounded text-xs font-bold shadow-sm transition-colors">Edit</button>
+            {% elif item.status == 'failed' or item.status == 'rewriting' or item.status == 'approved' %}
+                 <button hx-post="/reset-failure/{{ item.id }}" hx-target="#row-{{ item.id }}" hx-swap="outerHTML" class="w-full bg-orange-700 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-xs font-bold shadow-sm transition-colors">Reset Status</button>
+            {% endif %}
+            
+            {% if item.status == 'ready_to_post' %}
+                <button hx-post="/remove-from-queue/{{ item.id }}" hx-target="#row-{{ item.id }}" hx-swap="outerHTML" class="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow-sm transition-colors mb-2">Unqueue</button>
+            {% endif %}
+            
+            {% if item.status == 'prepared' or item.status == 'ready_to_post' %}
+                <a href="/review/{{ item.id }}" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow-sm transition-colors text-center inline-block">Review/Verify</a>
+            {% endif %}
+            
+            {% if item.status == 'idea' or item.status == 'failed' or item.status == 'rewriting' or item.status == 'approved' %}
+                <button hx-delete="/delete-item/{{ item.id }}" hx-confirm="Delete '{{ item.topic }}' permanently?" hx-target="#row-{{ item.id }}" hx-swap="outerHTML" class="w-full text-red-400 hover:bg-red-900/20 px-3 py-1.5 rounded text-xs font-bold transition-colors mt-2">Delete</button>
+            {% endif %}
+        </div>
+    </td>
+</tr>

@@ -3,6 +3,7 @@ import asyncio
 import logging
 from google import genai
 from .base import RewriteProvider
+from .context import RewriteContext
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +23,13 @@ class GeminiProvider(RewriteProvider):
         
         self.client = genai.Client(api_key=self.api_key)
 
-    async def rewrite(self, text: str, prompt: str) -> str:
+    async def rewrite(self, context: RewriteContext, prompt: str) -> str:
         loop = asyncio.get_running_loop()
         last_error = None
-        full_prompt = f"{prompt}\n\nOriginal Text:\n{text}"
+        
+        # Build prompt from context
+        context_block = context.to_prompt_block()
+        full_prompt = f"{prompt}\n\n{context_block}"
 
         for model in FALLBACK_MODELS:
             try:

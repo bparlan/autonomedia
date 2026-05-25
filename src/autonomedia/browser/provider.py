@@ -1,5 +1,6 @@
 import os
 import asyncio
+import random
 from playwright.async_api import async_playwright
 import logging
 
@@ -9,6 +10,7 @@ class BrowserProvider:
     """
     Centralized Browser Provider for context management, 
     lifecycle, and consistent artifact capture.
+    Includes BrowserProfiling for randomization to reduce bot detection.
     """
     def __init__(self, browser_data_dir: str, task_id: str = None):
         self.browser_data_dir = browser_data_dir
@@ -16,12 +18,32 @@ class BrowserProvider:
         self.context = None
         self.playwright = None
 
+    def _get_random_viewport(self):
+        """Randomizes viewport to avoid consistent fingerprinting."""
+        widths = [1280, 1366, 1440, 1600, 1920]
+        heights = [720, 768, 900, 1080]
+        return {
+            "width": random.choice(widths),
+            "height": random.choice(heights)
+        }
+
+    async def _human_delay(self):
+        """Randomized delay to simulate human timing."""
+        await asyncio.sleep(random.uniform(0.5, 2.5))
+
     async def __aenter__(self):
         self.playwright = await async_playwright().start()
+        
+        viewport = self._get_random_viewport()
+        logger.info(f"Launching browser with viewport {viewport}")
+        
         self.context = await self.playwright.chromium.launch_persistent_context(
             user_data_dir=self.browser_data_dir,
             headless=False,
-            viewport={"width": 1280, "height": 800}
+            viewport=viewport,
+            args=[
+                '--disable-blink-features=AutomationControlled',
+            ]
         )
         return self.context
 

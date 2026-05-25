@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+        <a href="/" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 bg-white border border-gray-200 px-3 py-1.5 rounded-lg shadow-sm transition-colors">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back to Command Center
+        </a>
+    </div>
+
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Review Post: {{ item.topic }}</h1>
+            <p class="text-gray-500 mt-2">Evaluate AI-generated variants before queuing for execution.</p>
+        </div>
+        <span class="bg-indigo-100 text-indigo-800 border border-indigo-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Draft #{{ item.id }}</span>
+    </div>
+
+    <!-- Original Idea Context -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Original Instruction / Idea</h3>
+        <p class="text-lg text-gray-800 leading-relaxed">{{ item.source_idea }}</p>
+        
+        {% if item.link_url %}
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-gray-400 mr-2">Attached Link:</span>
+                <a href="{{ item.link_url }}" target="_blank" class="text-blue-600 hover:underline font-medium flex items-center">
+                    {{ item.link_url }}
+                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <form action="/review/{{ item.id }}/approve" method="POST" class="space-y-8">
+        <div class="space-y-6">
+            {% set prepared = (item.prepared_content | fromjson) if item.prepared_content else {} %}
+            
+            {% if not prepared %}
+                <div class="bg-yellow-50 text-yellow-700 p-6 rounded-xl border border-yellow-200">
+                    <h3 class="font-bold">No content generated.</h3>
+                    <p>The AI rewrite process might not have finished or failed for this item. Please try regenerating.</p>
+                </div>
+            {% else %}
+                {% for platform, content in prepared.items() %}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden group focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 transition-all">
+                    <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center">
+                        <div class="flex items-center">
+                            <input type="checkbox" name="verify_{{ platform }}" value="true" checked class="mr-3 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <div class="w-2 h-2 rounded-full bg-indigo-500 mr-2"></div>
+                            <h3 class="font-bold text-gray-800 capitalize tracking-wide">{{ platform }} Generation</h3>
+                        </div>
+                        <span class="text-xs font-medium text-gray-500 bg-white px-2 py-1 rounded border border-gray-200">{{ content|length }} chars</span>
+                    </div>
+                    <div class="p-0">
+                        <textarea name="platform_{{ platform }}" rows="6" class="w-full border-0 focus:ring-0 resize-none p-5 text-gray-800 leading-relaxed">{{ content }}</textarea>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="flex items-center justify-between pt-6 border-t border-gray-200">
+            <div>
+                <p class="text-sm text-gray-500">Approving will queue this content for immediate execution.</p>
+            </div>
+            <div class="flex space-x-4">
+                <button type="submit" name="action" value="regenerate" class="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-6 py-2.5 rounded-lg font-bold shadow-sm transition-colors">
+                    Regenerate AI
+                </button>
+                <button type="submit" name="action" value="approve" class="bg-green-600 hover:bg-green-700 text-white px-8 py-2.5 rounded-lg font-bold shadow-sm transition-colors flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Send Verified to Queue
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

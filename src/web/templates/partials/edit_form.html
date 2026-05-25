@@ -11,11 +11,18 @@
                 <input type="text" name="link_url" value="{{ item.link_url }}" required style="width: 65%; padding: 4px;">
             </div>
             <input type="text" name="source_idea" value="{{ item.source_idea }}" required style="padding: 4px;">
+            <div style="display: flex; gap: 5px; align-items: center;">
+                <label style="font-weight: 500; font-size: 0.9em;">Platforms:</label>
+                {% set platforms = (item.platforms | fromjson) if item.platforms else ['mastodon'] %}
+                <label style="font-size: 0.9em;"><input type="checkbox" name="platforms" value="mastodon" {% if 'mastodon' in platforms %}checked{% endif %}> Mastodon</label>
+                <label style="font-size: 0.9em;"><input type="checkbox" name="platforms" value="x" {% if 'x' in platforms %}checked{% endif %}> X</label>
+                <label style="font-size: 0.9em;"><input type="checkbox" name="platforms" value="linkedin" {% if 'linkedin' in platforms %}checked{% endif %}> LinkedIn</label>
+            </div>
             <div style="display: flex; gap: 5px;">
-                <input type="text" name="hashtags" value="{{ (item.hashtags | fromjson) | join(', ') }}" placeholder="Hashtags" style="width: 50%; padding: 4px;">
-                <input type="text" name="mentions" value="{{ (item.mentions | fromjson).get('default', []) | join(', ') }}" placeholder="Mentions" style="width: 50%; padding: 4px;">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <button type="button" class="btn" hx-get="/cancel-edit/{{ item.id }}" hx-target="closest tr" hx-swap="outerHTML">Cancel</button>
+                <input type="text" name="hashtags" value="{{ (item.hashtags | fromjson) | join(', ') }}" placeholder="Hashtags" style="width: 40%; padding: 4px;">
+                <input type="text" name="mentions" value="{{ (item.mentions | fromjson).get('default', []) | join(', ') }}" placeholder="Mentions" style="width: 40%; padding: 4px;">
+                <button type="submit" class="btn btn-primary" style="width: 10%;">Save</button>
+                <button type="button" class="btn" hx-get="/cancel-edit/{{ item.id }}" hx-target="closest tr" hx-swap="outerHTML" style="width: 10%;">Cancel</button>
             </div>
         </form>
     </td>

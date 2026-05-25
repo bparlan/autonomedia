@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Autonomedia</title>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 flex h-screen overflow-hidden text-gray-100">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-black text-gray-100 flex flex-col border-r border-gray-800">
+        <div class="p-5 text-2xl font-bold border-b border-gray-800 tracking-tight">Autonomedia</div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="/" class="block py-2.5 px-4 rounded transition-colors {% if request.url.path == '/' %}bg-gray-800 font-medium{% else %}hover:bg-gray-800 hover:text-white text-gray-400{% endif %}">Command Center</a>
+            <a href="/content" class="block py-2.5 px-4 rounded transition-colors {% if request.url.path.startswith('/content') %}bg-gray-800 font-medium{% else %}hover:bg-gray-800 hover:text-white text-gray-400{% endif %}">Content Domain</a>
+            <a href="/rewrites" class="block py-2.5 px-4 rounded transition-colors {% if request.url.path.startswith('/rewrites') %}bg-gray-800 font-medium{% else %}hover:bg-gray-800 hover:text-white text-gray-400{% endif %}">AI Rewrites</a>
+            <a href="/registry" class="block py-2.5 px-4 rounded transition-colors {% if request.url.path.startswith('/registry') %}bg-gray-800 font-medium{% else %}hover:bg-gray-800 hover:text-white text-gray-400{% endif %}">Registry</a>
+            <a href="/platforms" class="block py-2.5 px-4 rounded transition-colors {% if request.url.path.startswith('/platforms') %}bg-gray-800 font-medium{% else %}hover:bg-gray-800 hover:text-white text-gray-400{% endif %}">Platforms</a>
+            
+            <div class="block py-2.5 px-4 rounded text-gray-600 cursor-not-allowed mt-4">Analytics (Coming Soon)</div>
+        </nav>
+
+        <div class="p-4 border-t border-gray-800">
+            <!-- Platform Health -->
+            <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Platform Health</div>
+            <div class="space-y-2 mb-6">
+                {% if platform_health %}
+                    {% for h in platform_health %}
+                        <div class="flex items-center text-sm">
+                            <span class="w-2 h-2 rounded-full mr-2 
+                                {% if h.status == 'healthy' %}bg-green-500
+                                {% elif h.status == 'unhealthy' %}bg-red-500
+                                {% else %}bg-gray-500
+                                {% endif %}"></span>
+                            <span class="text-gray-400 capitalize">{{ h.platform_name }}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <span class="text-xs text-gray-600 italic">No health data</span>
+                {% endif %}
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-10 bg-gray-900">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

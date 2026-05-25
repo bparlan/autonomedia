@@ -15,8 +15,10 @@ async def migrate():
     # Add new columns if they don't exist
     commands = [
         "ALTER TABLE content ADD COLUMN IF NOT EXISTS prepared_content JSONB DEFAULT '{}';",
+        "ALTER TABLE content ADD COLUMN IF NOT EXISTS platforms JSONB DEFAULT '[]';",
         "ALTER TABLE content ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMP WITH TIME ZONE;",
-        "ALTER TABLE content ADD COLUMN IF NOT EXISTS error_log TEXT;"
+        "ALTER TABLE content ADD COLUMN IF NOT EXISTS error_log TEXT;",
+        "ALTER TABLE post_history ADD COLUMN IF NOT EXISTS execution_duration FLOAT;"
     ]
     
     for cmd in commands:

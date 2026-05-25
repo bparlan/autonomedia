@@ -26,13 +26,12 @@ The system prioritizes:
 
 ## Current Capabilities
 
-- Persistent authenticated browser sessions
-- Mastodon autonomous publishing
-- Structured runtime logging
-- Screenshot verification pipeline
-- Async-first architecture
-- OpenRouter-ready rewrite layer
-- Platform-isolated browser profiles
+- Persistent authenticated browser sessions (Playwright)
+- Multi-platform targeted AI Rewrite layer (Gemini)
+- Asynchronous State-driven Assembly Line (`idea -> approved -> prepared -> ready_to_post -> published`)
+- Human-in-the-Loop review constraints (Moderation Adapter)
+- Structured runtime logging & screenshot verification
+- Browser anti-detection profiles (Human pacing, viewport randomization)
 
 ## Architecture
 

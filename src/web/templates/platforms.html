@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Platform Status</h1>
+    <div class="grid gap-4">
+        {% for h in platform_health %}
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <span class="font-bold capitalize text-gray-900 dark:text-white">{{ h.platform_name }}</span>
+            <div class="flex items-center gap-4">
+                <span class="{% if h.status == 'healthy' %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %} font-bold">
+                    {{ h.status | capitalize }}
+                </span>
+                <button class="text-xs bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition-colors">Connect</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

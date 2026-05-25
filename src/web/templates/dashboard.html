@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl">
+    <div class="mb-8 border-b border-gray-700 pb-4">
+        <h1 class="text-3xl font-bold tracking-tight text-white">Command Center</h1>
+        <p class="text-gray-400 mt-2">Operational triage and action queue.</p>
+    </div>
+
+    <div class="space-y-10">
+        <!-- Queued Items -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-blue-400">Ready to Publish</h2>
+                <span class="bg-blue-900 text-blue-200 text-xs font-bold px-2 py-1 rounded">{{ ready_items|length }} Items</span>
+            </div>
+            
+            {% if ready_items %}
+            <div class="bg-gray-800 rounded-lg shadow border border-blue-700 overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-blue-900/30 border-b border-blue-700">
+                        <tr>
+                            <th class="p-4 font-medium text-blue-300">ID / Topic</th>
+                            <th class="p-4 font-medium text-blue-300">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-blue-800">
+                        {% for item in ready_items %}
+                        <tr class="hover:bg-blue-900/20 transition-colors">
+                            <td class="p-4">
+                                <div class="font-bold text-gray-100">#{{ item.id }} - {{ item.topic }}</div>
+                            </td>
+                            <td class="p-4 text-blue-400 font-medium">Queued for Deployment</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="bg-gray-800 rounded-lg shadow border border-gray-700 p-8 text-center text-gray-400">
+                <p>No posts ready for publication.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Action Queue (Prepared) -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-indigo-400">AI Rewrite Review</h2>
+                <span class="bg-indigo-900 text-indigo-200 text-xs font-bold px-2 py-1 rounded">{{ prepared_items|length }} Tasks</span>
+            </div>
+            
+            {% if prepared_items %}
+            <div class="bg-gray-800 rounded-lg shadow border border-gray-700 overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-700 border-b border-gray-700">
+                        <tr>
+                            <th class="p-4 font-medium text-gray-300">ID / Topic</th>
+                            <th class="p-4 font-medium text-gray-300 w-32">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        {% for item in prepared_items %}
+                        <tr class="hover:bg-indigo-900/20 transition-colors">
+                            <td class="p-4">
+                                <div class="font-bold text-gray-100">#{{ item.id }} - {{ item.topic }}</div>
+                                <div class="text-gray-400 text-xs mt-1 truncate max-w-md">{{ item.source_idea }}</div>
+                            </td>
+                            <td class="p-4">
+                                <a href="/review/{{ item.id }}" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm font-semibold shadow-sm transition-colors">Review Post</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="bg-gray-800 rounded-lg shadow border border-gray-700 p-8 text-center text-gray-400">
+                <p>No posts are waiting for review. The AI Secretary is idle.</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- Failures -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-red-400">Failed Jobs</h2>
+                <span class="bg-red-900 text-red-200 text-xs font-bold px-2 py-1 rounded">{{ failed_items|length }} Errors</span>
+            </div>
+            
+            {% if failed_items %}
+            <div class="bg-gray-800 rounded-lg shadow overflow-hidden border border-red-900">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-red-900/30 border-b border-red-900">
+                        <tr>
+                            <th class="p-4 font-medium text-red-300">ID / Topic</th>
+                            <th class="p-4 font-medium text-red-300">Error Trace</th>
+                            <th class="p-4 font-medium text-red-300 w-32">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-red-900">
+                        {% for item in failed_items %}
+                        <tr class="bg-red-900/10">
+                            <td class="p-4 align-top w-1/4">
+                                <strong class="text-gray-100">#{{ item.id }}</strong> - {{ item.topic }}
+                            </td>
+                            <td class="p-4 align-top text-red-400 text-xs font-mono whitespace-pre-wrap leading-relaxed">{{ item.error_log }}</td>
+                            <td class="p-4 align-top w-40">
+                                <button hx-post="/reset-failure/{{ item.id }}" hx-target="closest tr" hx-swap="outerHTML" class="w-full bg-gray-700 border border-gray-600 hover:bg-gray-600 text-gray-200 px-3 py-2 rounded text-sm font-medium shadow-sm transition-colors">Reset</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="bg-gray-800 rounded-lg shadow border border-gray-700 p-8 text-center text-gray-400">
+                <p>No failed jobs. The Execution Worker is healthy.</p>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}
