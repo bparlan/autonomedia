@@ -1,75 +1,57 @@
 # AUTONOMEDIA — ROADMAP.md
 
-# PHASE 1
+# COMPLETED MILESTONES
 
-## Foundation
+## Foundation & Browser Setup (M1-M4)
+- Postgres connection pool established.
+- Playwright Chromium profiles persisted.
+- Basic routing and FastAPI setup.
+- Basic Mastodon task handler.
 
-Goals:
-- repo initialized
-- uv configured
-- postgres connected
-- playwright functional
-- chromium persistent profiles working
+## AI & The Assembly Line (M5-M6)
+- Replaced direct scripts with an async Assembly Line (`idea -> approved -> prepared -> published`).
+- Integrated `google-genai` with model fallback chains.
+- Split operations into independent `PostingSecretary` (AI) and `PostingExecutor` (Browser).
 
----
-
-# PHASE 2
-
-## Browser Layer
-
-Goals:
-- Mastodon login persistence
-- Bluesky login persistence
-- screenshot capture
-- accessibility selectors
-- successful manual posting
+## Moderation & Guardrails (M7)
+- Implemented `ModerationAdapter` to block content that violates platform limits.
+- Added Browser Profiling (randomized viewports, human delays) to prevent bot detection.
+- Prevented duplicate posts with a relational `post_history` check.
+- Enforced a human-in-the-loop review step for all AI generations.
 
 ---
 
-# PHASE 3
+# CURRENT & UPCOMING MILESTONES
 
-## Scheduling + Queue
+See full specifications in `docs/milestones/`.
 
-Goals:
-- APScheduler operational
-- randomized windows
-- async workers
-- retry system
+## PHASE 3: Domain Extraction & UX (M8)
+- **Status**: COMPLETE
+- **Specs**: [M8 UX Architecture](docs/milestones/M8-UX-ARCHITECTURE.md)
 
----
+## PHASE 4: Platform Health & Feedback (M9)
+- **Status**: IN_PROGRESS
+- **Specs**: [M9 Platform & Analytics](docs/milestones/M9-PLATFORMS-AND-ANALYTICS.md)
 
-# PHASE 4
+## PHASE 5: Autonomous Runtime (M10)
+- **Status**: PENDING
+- **Specs**: [M10 Autonomous Runtime](docs/milestones/M10-AUTONOMOUS-RUNTIME.md)
 
-## AI Rewrite Layer
+## PHASE 6: Observability & Self-Healing (M11)
+- **Status**: PENDING
+- **Specs**: [M11 Observability](docs/milestones/M11-OBSERVABILITY-AND-SELF-HEALING.md)
 
-Goals:
-- OpenRouter integration
-- platform-specific rewrites
-- stateless rewrite generation
-- UTM insertion
-
----
-
-# PHASE 5
-
-## Observability
-
-Goals:
-- structured logs
-- screenshot persistence
-- dashboard basics
-- retry controls
 
 ---
 
-# PHASE 6
+# FUTURE PHASES (M10+)
 
-## Expansion
+## Cross-Platform Expansion
+- Deploy LinkedIn task handler.
+- Deploy X (Twitter) task handler.
+- Standardize multi-platform parallel publishing.
 
-Potential future capabilities:
-- newsletters
-- blog publishing
-- client accounts
-- semantic memory
-- analytics intelligence
-- knowledge retrieval
+## Advanced Analytics & Memory
+- Ingest engagement data (likes, reshares).
+- Build semantic memory context for the AI to "remember" past successful tones.
+- Implement cost/performance ratio tracking.

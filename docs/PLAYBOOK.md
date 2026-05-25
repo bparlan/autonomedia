@@ -5,10 +5,19 @@
 1. Build smallest working version first.
 2. Prefer inspectability over cleverness.
 3. Avoid abstraction until repeated pain appears.
-4. Keep AI layer thin.
+4. Keep AI layer thin and strictly moderated.
 5. Preserve platform isolation.
-6. Always capture failures.
+6. Always capture failures (Screenshots, Logs).
 7. Prefer boring reliability.
+
+---
+
+# UX/UI RULES
+
+1. **Extract Domains:** Do not cram all operations into a monolithic table or an infinite scrolling screen.
+2. **Command Center is an Inbox:** The root view should only contain items that require human operator action (approvals, failed jobs, quick triage).
+3. **One-Click Resolutions:** Design flows so that fixing a failure or approving a post takes exactly one click from the operational view.
+4. **AI is a Workflow:** Do not treat AI review as a single HTML box. It requires diffs, traces, and platform-specific checks. Build it as a first-class subsystem.
 
 ---
 

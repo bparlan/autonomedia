@@ -1,4 +1,4 @@
-# Findings
+# Findings Archive - M12 AI Rewrite
 
 ## Current Architecture Status
 - **Batching**: Implemented `/batch-generate` via `asyncio.create_task` in `src/web/app.py`.

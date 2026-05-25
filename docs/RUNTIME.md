@@ -2,7 +2,7 @@
 
 # EXECUTION MODEL
 
-The runtime is async-first.
+Async First Runtime: asyncio throughout. No synchronous blocking.
 
 Main components:
 - scheduler
@@ -17,15 +17,29 @@ Main components:
 # HIGH LEVEL FLOW
 
 ```text
-scheduler
-→ select canonical content
-→ generate platform rewrite
-→ enqueue task
-→ worker executes browser automation
-→ validate successful post
-→ save logs/screenshots
-→ analytics update
+Dashboard (User adds Idea)
+→ Idea saved to DB (status: 'idea')
+→ User approves Idea (status: 'approved')
+→ PostingSecretary (Worker) polls 'approved'
+→ Secretary generates AI rewrites per platform
+→ Secretary validates content via ModerationAdapter
+→ Content staged in DB (status: 'prepared')
+→ Dashboard (User reviews AI output)
+→ User approves specific platform variants (status: 'ready_to_post')
+→ PostingExecutor (Worker) polls 'ready_to_post'
+→ Executor verifies post_history to prevent duplicates
+→ Executor executes browser automation
+→ Executor verifies successful post
+→ Saves logs/screenshots
+→ Promotes content to 'published'
 ````
+
+---
+
+# LOGGING POLICY
+
+Structured JSON. Required fields:
+`timestamp`, `platform`, `task_id`, `worker_id`, `status`, `duration`, `screenshot_path`, `retry_count`, `error_metadata`
 
 ---
 
@@ -61,15 +75,10 @@ Avoid:
 
 ---
 
-# FAILURE HANDLING
+# FAILURE POLICY
 
-On failure:
-
-1. capture screenshot
-2. save logs
-3. optionally save DOM snapshot
-4. increment retry counter
-5. requeue if retry policy allows
+- Failed post: capture screenshot, logs, DOM snapshot.
+- Successful post: capture final screenshot, URL, timestamp.
 
 ---
 

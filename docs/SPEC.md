@@ -184,23 +184,19 @@ Benefits:
 
 # DASHBOARD SCOPE
 
-Minimal operational dashboard only.
+The UI acts as an **Autonomous Media Operations System**.
 
-Features:
-
-* queue visibility
-* recent posts
-* screenshots
-* retry button
-* logs
-* pending tasks
-* browser health
+Information Architecture focuses on Domain Extraction (M8):
+* **Command Center:** Triage, pending approvals, failed jobs. (Lightweight, action-oriented).
+* **Content:** Idea backlogs, draft management.
+* **AI Review:** A dedicated workflow screen for diffing, scoring, and regenerating platform-specific content.
+* **Platforms:** Session health checks, rules, auth management.
+* **Analytics:** Operational feedback, token efficiency, failure rates.
 
 Avoid building:
-
-* Hootsuite clone
-* giant CMS
-* enterprise control panel
+* A monolithic, infinite-scrolling table of everything.
+* A traditional Hootsuite clone.
+* Modal-heavy reactive state soup.
 
 ---
 

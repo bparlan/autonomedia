@@ -55,44 +55,44 @@ psql autonomedia
 
 # INITIAL TABLES
 
-## canonical_posts
+## content
 
 ```sql
-CREATE TABLE canonical_posts (
-    id UUID PRIMARY KEY,
-    canonical_text TEXT NOT NULL,
-    referral_url TEXT,
-    category TEXT,
-    tags TEXT[],
-    approved BOOLEAN DEFAULT FALSE,
-    active BOOLEAN DEFAULT TRUE,
-    cooldown_days INTEGER DEFAULT 14,
-    platforms TEXT[],
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+CREATE TABLE IF NOT EXISTS content (
+    id TEXT PRIMARY KEY,
+    topic TEXT NOT NULL,
+    type TEXT NOT NULL,
+    status TEXT NOT NULL,  -- 'idea', 'approved', 'prepared', 'ready_to_post', 'published', 'failed'
+    source_idea TEXT,
+    link_url TEXT,
+    hashtags JSONB DEFAULT '[]',
+    mentions JSONB DEFAULT '{}',
+    ai_rewrites JSONB DEFAULT '[]',
+    prepared_content JSONB DEFAULT '{}',
+    platforms JSONB DEFAULT '[]',
+    scheduled_at TIMESTAMP WITH TIME ZONE,
+    error_log TEXT,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
 ---
 
-## post_events
+## post_history
 
-Tracks every publish attempt.
+Tracks execution safely to avoid duplicates across worker restarts.
 
 ```sql
-CREATE TABLE post_events (
-    id UUID PRIMARY KEY,
-    canonical_post_id UUID REFERENCES canonical_posts(id),
+CREATE TABLE IF NOT EXISTS post_history (
+    id SERIAL PRIMARY KEY,
+    content_id TEXT NOT NULL,
     platform TEXT NOT NULL,
-    generated_variant TEXT,
-    scheduled_for TIMESTAMP,
-    posted_at TIMESTAMP,
-    success BOOLEAN,
-    result_url TEXT,
-    screenshot_path TEXT,
-    retry_count INTEGER DEFAULT 0,
-    error_message TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
+    status TEXT NOT NULL,
+    error_log TEXT,
+    published_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (content_id, platform)
 );
 ```
 
@@ -116,21 +116,12 @@ CREATE TABLE browser_sessions (
 # CONTENT INGESTION STRATEGY
 
 Initial source:
-
-* Google Sheets CSV export
+* Dashboard-managed Content Domain UI (Backlog/Ideas)
+* HTMX-powered forms for quick triage
 
 Future source:
-
-* dashboard-managed canonical content
-
-Import pipeline:
-
-```text
-CSV
-→ validation
-→ normalization
-→ PostgreSQL
-```
+* API endpoints for external capture (e.g. browser extensions)
+* Ingestion pipelines from notes or RSS
 
 ---
 
@@ -152,24 +143,22 @@ Example:
 
 # ANALYTICS PHILOSOPHY
 
-Initially minimal.
+Analytics is an operational feedback engine, not vanity charts.
 
-Track:
+Track Operational Metrics:
+* publish success/failure rates
+* session health status
+* token cost efficiency
+* worker uptime
 
-* publish success
-* timestamps
-* retries
-* platform
-* generated variants
-* cooldown effectiveness
+Track Content Performance:
+* which AI rewrites were approved
+* platform underperformance
+* scheduling quality
 
 Future analytics may include:
-
 * impressions
-* engagement
-* CTR
-* category performance
-* posting-time effectiveness
+* engagement (likes, shares) post-publish
 
 ---
 

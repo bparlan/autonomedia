@@ -49,16 +49,14 @@ uv init
 
 ```bash
 uv add playwright
-uv add redis
 uv add sqlalchemy
-uv add psycopg[binary]
+uv add asyncpg
 uv add pydantic
 uv add fastapi
 uv add uvicorn
-uv add apscheduler
 uv add structlog
-uv add pandas
-uv add openai
+uv add google-genai
+uv add python-dotenv
 ```
 
 Install browser:
@@ -151,6 +149,18 @@ Good:
 page.get_by_role("button", name="Post")
 ```
 
+## PLAYWRIGHT POLICY
+
+Prefer accessibility selectors. Violations are architectural debt.
+
+```python
+page.get_by_role("button", name="Post")   # correct
+page.locator("div:nth-child(5) > span > button")  # never
+```
+
+Use: `get_by_role()`, `get_by_label()`, `get_by_text()`
+Avoid: CSS chains, nth-child, fragile DOM traversal.
+
 ---
 
 # DATABASE
@@ -204,7 +214,7 @@ Reason:
 
 # BROWSER PROFILE MANAGEMENT
 
-Each platform profile isolated.
+Each platform has isolated profile, selectors, posting logic, validation. No universal adapter.
 
 Profiles stored under:
 
@@ -228,3 +238,21 @@ Planned future capabilities:
 * knowledge retrieval
 
 Current architecture must preserve compatibility.
+
+---
+
+# UX ARCHITECTURE
+
+We build an "autonomous media operations system", not a basic web app.
+
+Constraints:
+* No framework soup (no React/Vue). Use HTML, Jinja2, HTMX, and Tailwind.
+* "Fewer clicks to resolve work" is better than "Fewer pages".
+* Utilize "Phase 3 Domain Extraction".
+
+Domains:
+* **Command Center:** Operational overview, triage, action queue (pending approvals, failures).
+* **Content:** Dedicated backlog and idea management.
+* **AI Review:** First-class subsystem for inspecting AI diffs, regenerating, and approving output.
+* **Platforms:** Dedicated integration health (session cookies, auth limits).
+* **Analytics:** Dedicated feedback layer.

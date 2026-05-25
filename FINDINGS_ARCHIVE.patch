@@ -1,0 +1,11 @@
+--- a/FRAMEWORK.md
++++ b/FRAMEWORK.md
+@@ -42,6 +42,16 @@
+ - Platform Limits: The rewrite engine currently generates content without strict enforcement of platform-specific character limits (e.g., Mastodon 500, X 280). Future iterations should pass `max_chars` as a context variable.
+ 
++- Resumeability: Background generation tasks lack a `batch_id`. If the worker crashes, it will restart processing all `rewriting` items. This is acceptable for reliability but may cause duplicate AI usage. Production should consider a `batch_id` for traceability.
++
++- Verification Granularity: The `verification_status` column enables per-platform verification, decoupling approval from the database state. This aligns with the principle of "User-in-the-loop" for final quality control.
++
++- Action Unification: HTMX polling (`hx-trigger="every 5s"`) has been introduced to refresh status labels automatically. This prevents stale UI during long-running generation tasks without requiring manual page reloads.
++
