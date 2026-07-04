@@ -6,7 +6,7 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 # Add project root to sys.path
 sys.path.append(str(Path(__file__).resolve().parents[2]))

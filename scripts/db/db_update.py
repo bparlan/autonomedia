@@ -1,7 +1,7 @@
 import asyncio
 
-from src.database.client import DatabaseClient
-from src.database.schema import INIT_SCHEMA
+from src.autonomedia.database.client import DatabaseClient
+from src.autonomedia.database.schema import INIT_SCHEMA
 
 
 async def update():

@@ -17,7 +17,7 @@ logger = logging.getLogger("web.app")
 import os
 import tempfile
 
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 app = FastAPI()
 templates = Jinja2Templates(directory="src/web/templates")

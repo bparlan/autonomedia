@@ -1,7 +1,7 @@
 import logging
 
 from src.autonomedia.core.observability.telegram import notifier
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 logger = logging.getLogger("passive_health_monitor")
 

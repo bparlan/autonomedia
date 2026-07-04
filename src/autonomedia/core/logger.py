@@ -1,4 +1,4 @@
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 
 async def log_post_event(

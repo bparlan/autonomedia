@@ -1,7 +1,7 @@
 import asyncio
 import json
 
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 
 async def run_scenario_test():

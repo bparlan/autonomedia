@@ -8,8 +8,8 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.database.client import DatabaseClient
-from src.database.schema import INIT_SCHEMA
+from src.autonomedia.database.client import DatabaseClient
+from src.autonomedia.database.schema import INIT_SCHEMA
 
 
 async def ingest_csv(csv_path: Path):

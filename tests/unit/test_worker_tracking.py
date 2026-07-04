@@ -1,7 +1,7 @@
 
 import pytest
 
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 
 @pytest.mark.xfail(reason="Pre-existing issue: attempt_count column missing")

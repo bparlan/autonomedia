@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 
 from src.autonomedia.core.worker import poller, worker
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 logger = logging.getLogger("test_worker")
 

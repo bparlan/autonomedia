@@ -8,7 +8,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 # Commenting out live_server as it currently has dependency issues
 # and isn't needed for the integration tests of the runtime.

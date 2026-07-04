@@ -3,7 +3,7 @@ import json
 import pytest
 from httpx import ASGITransport, AsyncClient
 
-from src.database.schema import INIT_SCHEMA
+from src.autonomedia.database.schema import INIT_SCHEMA
 from src.web.app import app
 
 

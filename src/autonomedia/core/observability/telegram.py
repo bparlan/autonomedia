@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 load_dotenv()
 logger = logging.getLogger("telegram_bot")

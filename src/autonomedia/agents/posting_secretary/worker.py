@@ -11,7 +11,7 @@ from src.autonomedia.core.utils.verification import (
     is_platform_verified,
     parse_verification_status,
 )
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 # Structured JSON logging as per Autonomedia guidelines
 structlog.configure(processors=[structlog.processors.JSONRenderer()])

@@ -4,7 +4,7 @@ import json
 import structlog
 
 from src.autonomedia.platforms.mastodon.task_handler import publish_mastodon
-from src.database.client import DatabaseClient
+from src.autonomedia.database.client import DatabaseClient
 
 # Structured JSON logging
 structlog.configure(processors=[structlog.processors.JSONRenderer()])

@@ -2,7 +2,7 @@
 
 import json
 
-from src.autonomedia.ai.rewriting.gemini import GeminiAIClient
+    # from src.autonomedia.ai.rewriting.gemini import GeminiAIClient # Deferred import
 from src.autonomedia.core.storage.analysis_storage import AnalysisStorage
 
 
@@ -25,6 +25,7 @@ def perform_ai_analysis(content_idea: dict) -> str:
         ValueError: If the processed idea is empty.
         AIAnalysisError: If any error occurs during AI analysis or storage.
     """
+    from src.autonomedia.ai.rewriting.gemini import GeminiAIClient
     ai_client = GeminiAIClient()
     storage_client = AnalysisStorage()
 

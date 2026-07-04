@@ -1,4 +1,4 @@
-from src.database.schema import INIT_SCHEMA
+from src.autonomedia.database.schema import INIT_SCHEMA
 
 
 def test_init_schema_has_verification_status():

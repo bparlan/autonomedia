@@ -1,4 +1,4 @@
 from .base import RewriteProvider
-from .gemini import GeminiProvider
+from .gemini import GeminiAIClient
 
 __all__ = ["RewriteProvider", "GeminiProvider"]
