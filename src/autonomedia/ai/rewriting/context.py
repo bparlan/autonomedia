@@ -1,18 +1,18 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
+
 
 @dataclass
 class RewriteContext:
     source_idea: str
-    tags: List[str] = field(default_factory=list)
-    mentions: List[str] = field(default_factory=list)
-    url: Optional[str] = None
+    tags: list[str] = field(default_factory=list)
+    mentions: list[str] = field(default_factory=list)
+    url: str | None = None
     platform: str = "general"
 
     def to_prompt_block(self) -> str:
         """Serializes the context into a structured prompt block."""
         lines = [
-            f"--- CONTEXT ---",
+            "--- CONTEXT ---",
             f"Platform: {self.platform}",
             f"Idea: {self.source_idea}",
             f"Tags: {', '.join(self.tags)}",

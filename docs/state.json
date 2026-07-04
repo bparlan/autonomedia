@@ -1,0 +1,13 @@
+{
+  "mode": "review",
+  "milestone": "M14",
+  "spec": "M14S1",
+  "verification": "M14S1V",
+  "status": "approved",
+  "fixes_applied": [
+    "_apply_randomized_delay() now invoked in posting_routine()",
+    "TC3 test added for mixed verified/unverified platforms",
+    "TC9/TC10 tests added for 8-hour window validation",
+    "All datetime handling updated for asyncpg compatibility"
+  ]
+}

@@ -2,6 +2,11 @@
 
 # EXECUTION MODEL
 
+* **Batch Execution**: Currently handled via background task (`asyncio.create_task`), but lacks atomic `batch_id` tracking. If a process interrupts, existing `rewriting` statuses are picked up on restart (potentially duplicating work if not idempotent).
+* **Error Resolution**: `worker.py` utilizes `ErrorResolver.classify()`.
+  * Transient: Triggers auto-retry.
+  * Fatal: Immediately halts, updating status to `failed` to prevent infinite loops.
+
 Async First Runtime: asyncio throughout. No synchronous blocking.
 
 Main components:
@@ -79,6 +84,10 @@ Avoid:
 
 - Failed post: capture screenshot, logs, DOM snapshot.
 - Successful post: capture final screenshot, URL, timestamp.
+
+### Excluded Platform Audit Trail
+
+When platforms are excluded during queue processing, log the exclusion with sufficient context for later auditing. This prevents silent data loss and supports debugging of approval workflow issues.
 
 ---
 

@@ -15,6 +15,10 @@ Reasoning:
 
 ---
 
+## Platform Awareness
+
+* **Character Limits**: AI generation currently treats all channels as uniform. It does not natively respect specific platform character limits (e.g., X vs LinkedIn).
+
 # PACKAGE MANAGEMENT
 
 Use uv.
@@ -66,6 +70,28 @@ playwright install chromium
 ```
 
 ---
+
+# TEMPLATE EDGE CASE HANDLING
+
+## Verification Status Synchronization
+
+* Platforms may exist in `prepared_content` without corresponding entries in `verification_status`.
+* Templates must handle missing verification statuses gracefully—render unverified badges as default.
+* Never assume verification status completeness; always check for key existence.
+
+### Concurrent Approval Safety
+
+When checking approval status concurrently, use row-level locking to prevent race conditions. Example pattern:
+
+```sql
+SELECT * FROM verifications WHERE content_id = $1 FOR UPDATE;
+```
+
+Two simultaneous requests could both pass a status check before either writes, leading to duplicate posting attempts. Always wrap concurrent status checks in transaction isolation or use `FOR UPDATE` for PostgreSQL-level locking.
+
+### Platform Filtering Optimization
+
+Platform filtering and verification status building should be consolidated into a single-pass logic flow. Avoid double-filtering prepared_data and verification_status separately, as this creates maintenance burden and potential for divergence. Build verification status inline during platform iteration.
 
 # ASYNC DESIGN EXPLANATION
 
@@ -238,6 +264,12 @@ Planned future capabilities:
 * knowledge retrieval
 
 Current architecture must preserve compatibility.
+
+---
+
+# PIPELINE INTEGRITY RULE: EXPLICIT DISPATCH
+
+Async workers in a modular pipeline MUST explicitly invoke downstream handlers. Database status updates alone do NOT constitute execution. Any async queue processor that lacks a dispatch block (e.g., calling `publish_mastodon`, `execute_x`, etc.) will silently succeed on schema changes but never achieve the business goal. Future implementations of `PostingSecretary` or similar workers MUST include a dispatch phase before concluding with status updates.
 
 ---
 

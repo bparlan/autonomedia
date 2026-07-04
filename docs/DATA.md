@@ -77,6 +77,11 @@ CREATE TABLE IF NOT EXISTS content (
 );
 ```
 
+### Schema Notes
+* `content.status`: Determines UI visibility and processing flow.
+  * `idea`: Draft state, visible in `/content` view.
+  * `prepared`: Ready/Approved state, triggers rewrite workflow, visible in `/rewrites`.
+
 ---
 
 ## post_history
@@ -110,6 +115,27 @@ CREATE TABLE browser_sessions (
     created_at TIMESTAMP DEFAULT NOW()
 );
 ```
+
+---
+
+## verifications
+
+```sql
+CREATE TABLE verifications (
+    id TEXT PRIMARY KEY,
+    content_id TEXT NOT NULL REFERENCES content(id),
+    platform TEXT NOT NULL,
+    status TEXT NOT NULL, -- 'pending', 'approved', 'rejected', 'posted'
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Schema Notes
+* `verifications.status`: Tracks per-platform approval state.
+  * `pending`: Created when AI generates content for a platform.
+  * `approved`: User has verified; eligible for posting queue.
+  * `rejected`: User has rejected; excluded from queue.
+  * `posted`: Successfully published.
 
 ---
 

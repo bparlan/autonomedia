@@ -1,5 +1,5 @@
+
 import pytest
-import asyncio
 from playwright.async_api import async_playwright
 
 # Configuration
@@ -17,7 +17,7 @@ async def test_m12_verification():
         assert await page.is_visible("textarea[name='source_idea']")
         # Check mentions input is absent
         assert await page.query_selector("input[name='mentions']") is None
-        print("Verified: Content Domain UI")
+
 
         # 2. Verify Status Animation
         # We need an item in 'approved' status. Assuming '001' exists.
@@ -29,12 +29,12 @@ async def test_m12_verification():
             # Check for Generating label with animate-pulse
             status_label = page.locator(".animate-pulse:has-text('Generating')").first
             assert await status_label.is_visible()
-            print("Verified: Status Animation")
+
 
         # 3. Verify Registry (No ISE)
         response = await page.goto(f"{BASE_URL}/registry")
         assert response.status == 200
-        print("Verified: Registry Page accessible")
+
 
         # 4. Verify AI Rewrite Actions & Review Page
         # We need a prepared item
@@ -46,12 +46,12 @@ async def test_m12_verification():
             # Check Review Page Structure
             assert await page.is_visible("textarea[name='platform_mastodon']")
             assert await page.is_visible("input[name='verify_mastodon']")
-            
+
             # Verify payload logic
             # Click "Send Verified to Queue"
             await page.click("button[value='approve']")
             await page.wait_for_url(f"{BASE_URL}/rewrites")
-            print("Verified: Review Dashboard & Queueing")
+
 
         # 5. Verify Queue Removal
         ready_btn = page.locator("button:has-text('Remove from Queue')").first
@@ -59,6 +59,6 @@ async def test_m12_verification():
             await ready_btn.click()
             # Check status reverted to Review Needed (prepared)
             assert await page.is_visible("text='Review Needed'")
-            print("Verified: Queue Removal")
+
 
         await browser.close()

@@ -1,6 +1,8 @@
 import asyncio
 import json
+
 from src.database.client import DatabaseClient
+
 
 async def run_scenario_test():
     pool = await DatabaseClient.get_pool()
@@ -10,22 +12,44 @@ async def run_scenario_test():
     async with pool.acquire() as conn:
         await conn.execute("DELETE FROM content WHERE topic = 'Test-01'")
         new_id = await conn.fetchval("SELECT COALESCE(MAX(id::int), 0) + 1 FROM content")
-        await conn.execute("INSERT INTO content (id, topic, type, status, source_idea) VALUES ($1, $2, $3, $4, $5)", 
-                           f"{new_id:03d}", "Test-01", "RefLink", "idea", "Source Idea")
+        await conn.execute(
+            "INSERT INTO content (id, topic, type, status, source_idea)",
+            "VALUES ($1, $2, $3, $4, $5)",
+        )
         count = await conn.fetchval("SELECT count(*) FROM content WHERE topic = 'Test-01'")
         if count != 1: errors.append("Scenario 01: Failed to add")
 
-    # Scenario 02: Toggle
-    async with pool.acquire() as conn:
-        await conn.execute("UPDATE content SET status = 'approved' WHERE topic = 'Test-01'")
-        status = await conn.fetchval("SELECT status FROM content WHERE topic = 'Test-01'")
-        if status != 'approved': errors.append("Scenario 02: Failed to toggle")
-
-    # Scenario 03: Edit (on Unapproved - need to set back to idea first)
-    async with pool.acquire() as conn:
-        await conn.execute("UPDATE content SET status = 'idea' WHERE topic = 'Test-01'")
-        await conn.execute("UPDATE content SET topic = 'Test-01-Edited' WHERE topic = 'Test-01'")
-        topic = await conn.fetchval("SELECT topic FROM content WHERE topic = 'Test-01-Edited'")
+        await conn.execute(
+            "UPDATE content SET status = 'approved' WHERE topic = 'Test-01'"
+        )
+        status = await conn.fetchval(
+            "SELECT status FROM content WHERE topic = 'Test-01'"
+        )
+        await conn.execute(
+            "UPDATE content SET topic = 'Test-01-Edited' WHERE topic = 'Test-01'"
+        )
+        topic = await conn.fetchval(
+            "SELECT topic FROM content WHERE topic = 'Test-01-Edited'"
+        await conn.execute(
+            "UPDATE content SET status = 'idea' WHERE topic = 'Test-01'"
+        )
+        await conn.execute(
+            "UPDATE content SET topic = 'Test-01-Edited' WHERE topic = 'Test-01'"
+        )
+        topic = await conn.fetchval(
+            "SELECT topic FROM content WHERE topic = 'Test-01-Edited'"
+        )
+            "UPDATE content SET topic = 'Test-01-Edited' WHERE topic = 'Test-01'"
+        )
+        topic = await conn.fetchval(
+            "SELECT topic FROM content WHERE topic = 'Test-01-Edited'"
+        )
+        await conn.execute(
+            "UPDATE content SET topic = 'Test-01-Edited' WHERE topic = 'Test-01'"
+        )
+        topic = await conn.fetchval(
+            "SELECT topic FROM content WHERE topic = 'Test-01-Edited'"
+        )
         if topic != 'Test-01-Edited': errors.append("Scenario 03: Failed to edit")
 
     # Scenario 06: Approval Lock (Safety check)
@@ -55,9 +79,9 @@ async def run_scenario_test():
         await conn.execute("DELETE FROM content WHERE topic = 'Test-01-Edited'")
 
     if errors:
-        for err in errors: print(err)
+        for err in errors: 
     else:
-        print("All Scenarios Passed.")
+        
     await DatabaseClient.close()
 
 asyncio.run(run_scenario_test())

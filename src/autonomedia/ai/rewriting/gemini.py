@@ -1,62 +1,58 @@
-import os
-import asyncio
-import logging
-from google import genai
-from .base import RewriteProvider
-from .context import RewriteContext
+# src/autonomedia/ai/rewriting/gemini.py
 
-logger = logging.getLogger(__name__)
+from src.autonomedia.ai.analysis import AIAnalysisError  # Import the custom exception
 
-# List confirmed available by your API key
-FALLBACK_MODELS = [
-    "gemini-2.5-flash",
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-lite",
-    "gemini-3-flash-preview",
-]
 
-class GeminiProvider(RewriteProvider):
-    def __init__(self, api_key: str = None):
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        if not self.api_key:
-            raise ValueError("GEMINI_API_KEY (or GOOGLE_API_KEY) must be set in environment")
-        
-        self.client = genai.Client(api_key=self.api_key)
+class GeminiAIClient:
+    def analyze_idea(self, idea_text: str) -> dict:
+        """Simulates AI analysis for a content idea.
 
-    async def rewrite(self, context: RewriteContext, prompt: str) -> str:
-        loop = asyncio.get_running_loop()
-        last_error = None
-        
-        # Build prompt from context
-        context_block = context.to_prompt_block()
-        full_prompt = f"{prompt}\n\n{context_block}"
+        Args:
+            idea_text: The content idea text to analyze.
 
-        for model in FALLBACK_MODELS:
-            try:
-                response = await loop.run_in_executor(
-                    None,
-                    lambda m=model: self.client.models.generate_content(
-                        model=m,
-                        contents=full_prompt
-                    )
-                )
-                return response.text
+        Returns:
+            A dictionary containing analysis results (keywords, hashtags, handles, tips).
 
-            except Exception as e:
-                # Inspect for status codes 404 (model gone) or 429 (rate limited)
-                status = getattr(e, 'status_code', None)
-                err_str = str(e)
-                
-                # Check status code or string representation for 404/429
-                if status in (404, 429) or "404" in err_str or "429" in err_str:
-                    logger.warning(f"Model {model} failed ({status or 'Unknown'}). Falling back...")
-                    last_error = e
-                    continue
-                
-                # Fail fast on Auth (401/403) or Malformed requests
-                logger.error(f"Critical AI error: {e}")
-                raise e
+        Raises:
+            AIAnalysisError: If an error occurs during the analysis process.
+        """
+        try:
+            if not idea_text:
+                # Handle empty input gracefully, though capture_content_idea should prevent this.
+                return {
+                    "keywords": [],
+                    "hashtags": [],
+                    "handles": [],
+                    "visibility_tips": [],
+                }
 
-        raise RuntimeError(
-            f"All Gemini models exhausted. Final error: {last_error}"
-        )
+            # Simulate AI analysis: extract keywords, hashtags, handles, and tips
+              # Logging statement
+
+            keywords = [word for word in idea_text.lower().split() if len(word) > 4]
+            hashtags = [
+                f"#{word}" for word in idea_text.split() if word.lower().startswith("#")
+            ]
+            handles = [
+                word for word in idea_text.split() if word.lower().startswith("@")
+            ]
+            tips = [
+                "Consider using more specific keywords.",
+                "Add a relevant call to action.",
+            ]
+
+            # Simulate a potential error scenario (e.g., if AI service fails)
+            # if "error" in idea_text.lower():
+            #     raise ConnectionError("Simulated AI service connection error.")
+
+            return {
+                "keywords": keywords,
+                "hashtags": hashtags,
+                "handles": handles,
+                "visibility_tips": tips,
+            }
+        except Exception as e:
+            # Catching a broad exception for now, should be more specific if possible
+            error_message = f"Error during AI analysis for idea '{idea_text[:50]}': {e}"
+              # Logging the error
+            raise AIAnalysisError(error_message) from e

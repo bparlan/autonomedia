@@ -1,6 +1,7 @@
 import pytest
+
 from src.autonomedia.ai.rewriting.context import RewriteContext
-from src.autonomedia.ai.rewriting.gemini import GeminiProvider
+
 
 @pytest.mark.asyncio
 async def test_rewrite_context_serialization():
@@ -17,5 +18,5 @@ async def test_rewrite_context_serialization():
     assert "#test" in prompt
     assert "http://test.com" in prompt
 
-# Note: Integration with actual AI is excluded from unit tests, 
+# Note: Integration with actual AI is excluded from unit tests,
 # relying on mocks or golden master for regression.

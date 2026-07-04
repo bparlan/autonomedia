@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS content (
     status TEXT NOT NULL,
     source_idea TEXT,
     link_url TEXT,
+    batch_id TEXT,
     hashtags JSONB DEFAULT '[]',
     mentions JSONB DEFAULT '{}',
     ai_rewrites JSONB DEFAULT '[]',
@@ -16,6 +17,7 @@ CREATE TABLE IF NOT EXISTS content (
     scheduled_at TIMESTAMP WITH TIME ZONE,
     error_log TEXT,
     metadata JSONB DEFAULT '{}',
+    verification_status JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

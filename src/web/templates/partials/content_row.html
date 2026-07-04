@@ -17,7 +17,7 @@
         <div class="mt-2 flex flex-wrap gap-1">
             {% set tags = (item.hashtags | fromjson) or [] %}
             {% for tag in tags %}
-                <span class="bg-blue-900 text-blue-200 text-[11px] px-1.5 py-0.5 rounded font-medium">{{ tag }}</span>
+                <span class="bg-blue-900 text-blue-200 text-[11px] px-1.5 py-1 rounded font-medium">{{ tag }}</span>
             {% endfor %}
         </div>
     </td>
@@ -33,7 +33,22 @@
         {% elif item.status == 'prepared' %}
             <span class="bg-yellow-900 text-yellow-200 border border-yellow-800 px-2 py-1 rounded text-xs font-bold uppercase">Verification Needed</span>
         {% elif item.status == 'ready_to_post' %}
-            <span class="bg-blue-900 text-blue-200 border border-blue-800 px-2 py-1 rounded text-xs font-bold uppercase">Queued</span>
+            {% set prepared = (item.prepared_content | fromjson) if item.prepared_content else {} %}
+            {% set verification = (item.verification_status | fromjson) if item.verification_status else {} %}
+            {% if prepared is mapping and prepared|length > 0 and verification %}
+                {% for platform, content in prepared.items() %}
+                    {% set vstatus = verification.get(platform, {}) %}
+                    {% if vstatus is mapping and vstatus.get('verified') == true %}
+                        <span class="bg-green-600 text-white border border-green-500 px-2 py-1 rounded text-xs font-bold uppercase mr-1">{{ platform|title }}: Verified - In Queue</span>
+                    {% elif vstatus is mapping and vstatus.get('verified') == false %}
+                        <span class="bg-gray-600 text-gray-200 border border-gray-500 px-2 py-1 rounded text-xs font-bold uppercase mr-1">{{ platform|title }}: Unverified</span>
+                    {% else %}
+                        <span class="bg-yellow-600 text-yellow-100 border border-yellow-500 px-2 py-1 rounded text-xs font-bold uppercase mr-1">{{ platform|title }}: Pending</span>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <span class="bg-green-600 text-white border border-green-500 px-2 py-1 rounded text-xs font-bold uppercase">Verified - In Queue</span>
+            {% endif %}
         {% elif item.status == 'published' %}
             <span class="bg-emerald-900 text-emerald-200 border border-emerald-800 px-2 py-1 rounded text-xs font-bold uppercase">Published ✓</span>
         {% elif item.status == 'failed' %}

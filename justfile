@@ -1,14 +1,18 @@
-# Justfile - Project Command Runner
+# === Fast feedback loop ===
+check:
+    @uv run ruff check --select E,W,F,I,ASYNC .
 
-# Verify project integrity
-verify:
-    @echo "Verifying project integrity..."
-    @./scripts/verify_no_leak.sh
+fix:
+    @uv run ruff check --fix --select E,W,F,I,ASYNC .
+    @uv run ruff format .
 
-# Run the worker runtime
-run-worker:
-    @python3 src/autonomedia/core/worker.py
+# === Pre-push ===
+lint:
+    @uv run ruff check .
+    @uv run mypy .
 
-# Run standard tests
-test:
-    @pytest
+# === Tests ===
+test: test-code
+
+test-code:
+    @uv run pytest && uv run ruff check . && uv run mypy .

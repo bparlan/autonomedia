@@ -41,6 +41,21 @@ Reason:
 
 # COMMON FAILURE MODES
 
+## Dashboard Verification Requirements
+
+* **E2E Testing Mandate:** Every dashboard rendering feature must have corresponding e2e tests before merge. Per-platform dashboard status (e.g., Ready to Publish) requires explicit test coverage.
+* **Unqueue Visibility:** The Command Center must expose "Unqueue" actions for any queued item to match roadmap operational expectations.
+* **Badge Coverage Completeness:** Test assertions for dashboard badges must validate:
+  - All expected platforms display (no silent omission)
+  - Verified/unverified status renders correctly
+  - Platform names are explicitly shown, not inferred
+
+### Human-in-the-Loop Workflow
+
+* **Retry**: Triggered on AI API/parsing errors (System-level failure).
+* **Regenerate**: Triggered for poor quality/tone (Human-level preference).
+* The differentiation is currently inferred from the trigger context.
+
 ## Fragile Selectors
 
 Fix:
@@ -73,6 +88,29 @@ Fix:
 - structured logs
 - screenshots
 - verification steps
+
+### Silent Platform Exclusion Logging
+
+Platforms excluded due to unhealthy status or missing verification must be logged explicitly with context. Include:
+- platform name
+- content_id  
+- exclusion reason
+
+This ensures auditability for platforms silently removed from posting queues.
+
+---
+
+## FAILURE MODE: SILENT STUB EXECUTION
+
+**Symptom:** Async workers complete with log entries but no real-world effect occurs (e.g., posts not published).
+
+**Cause:** Implementation stubbed the dispatch logic—updating internal state (database) instead of external actions (API calls).
+
+**Detection:**
+- Audit logs show status changes but no corresponding platform API logs.
+- E2E tests involving real publishing fail while unit tests pass.
+
+**Mitigation:** Require every async queue processor to have a `dispatch_to_platform()` or similar function call before any `status = 'posted'` update.
 
 ---
 

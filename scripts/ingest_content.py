@@ -2,9 +2,8 @@
 import asyncio
 import csv
 import json
-import sys
-import os
 import re
+import sys
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
@@ -12,9 +11,10 @@ sys.path.append(str(Path(__file__).parent.parent))
 from src.database.client import DatabaseClient
 from src.database.schema import INIT_SCHEMA
 
+
 async def ingest_csv(csv_path: Path):
     if not csv_path.exists():
-        print(f"Error: {csv_path} not found.")
+        
         return
 
     pool = await DatabaseClient.get_pool()
@@ -23,9 +23,9 @@ async def ingest_csv(csv_path: Path):
     async with pool.acquire() as conn:
         await conn.execute("DROP TABLE IF EXISTS content;")
         await conn.execute(INIT_SCHEMA)
-        print("Database schema dropped and recreated for Assembly Line (v2).")
+        
 
-    with open(csv_path, 'r', encoding='utf-8') as f:
+    with open(csv_path, encoding='utf-8') as f:
         reader = csv.DictReader(f)
         count = 0
         for row in reader:
@@ -45,18 +45,31 @@ async def ingest_csv(csv_path: Path):
             hashtags_formatted = [f"#{t}" for t in hashtags]
             
             mentions_list = list(set(re.findall(r'@(\w+)', post_text)))
-            mentions = {"default": [f"@{m}" for m in mentions_list]} if mentions_list else {}
+mentions = {}
+if mentions_list:
+    mentions["default"] = [f"@{m}" for m in mentions_list]
             
             # Remove the URL line from the text to isolate the idea
             source_idea = re.sub(r'⬇\s*https?://[^\s]+', '', post_text).strip()
 
             async with pool.acquire() as conn:
                 await conn.execute("""
-                    INSERT INTO content (id, topic, type, status, source_idea, link_url, hashtags, mentions)
+    INSERT INTO content (
+        id,
+        topic,
+        type,
+        status,
+        source_idea,
+        link_url,
+        hashtags,
+        mentions
+    )
                     VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8::jsonb)
-                """, row['id'], row['topic'], row['type'], row['status'], source_idea, link_url, json.dumps(hashtags_formatted), json.dumps(mentions))
+VALUES (
+    $1, $2, $3, $4, $5, $6, $7::jsonb, $8::jsonb
+)
             
-            print(f"Ingested: {row['id']} - Isolated components successfully.")
+            
             count += 1
 
     await DatabaseClient.close()

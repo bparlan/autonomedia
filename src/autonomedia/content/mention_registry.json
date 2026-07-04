@@ -12,7 +12,8 @@
       "display_name": "OpenAI",
       "platforms": {
         "linkedin": "OpenAI",
-        "x": "@OpenAI"
+        "x": "@OpenAI",
+        "mastodon": "@openai@mastodon.social"
       }
     },
     "Lombard Finance": {

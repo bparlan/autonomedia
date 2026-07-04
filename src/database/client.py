@@ -1,9 +1,13 @@
 # src/database/client.py
-import asyncpg
 import os
 
+import asyncpg
+
 # Deterministic configuration via environment variables
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://bparlan@localhost:5432/autonomedia")
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", "postgresql://bparlan@localhost:5432/autonomedia"
+)
+
 
 class DatabaseClient:
     _pool = None
