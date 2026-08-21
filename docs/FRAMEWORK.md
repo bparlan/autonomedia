@@ -17,7 +17,8 @@ Reasoning:
 
 ## Platform Awareness
 
-* **Character Limits**: AI generation currently treats all channels as uniform. It does not natively respect specific platform character limits (e.g., X vs LinkedIn).
+* **Character Limits**: Resolved in M15 via `get_platform_constraints()` API and `adapt_content_for_platform()` utilities for platform-specific limits (LinkedIn: 300/3000, X: 280, Mastodon: 500).
+* **Content Adaptation**: M15 implemented platform-specific content adaptation with tone guidelines (professional for LinkedIn, punchy for X, community-focused for Mastodon).
 
 # PACKAGE MANAGEMENT
 
@@ -200,6 +201,7 @@ Postgres should become source-of-truth immediately.
 Google Sheets only acts as ingestion source.
 
 ---
+For detailed schema definitions, table structures, and ingestion strategies, see [DATA.md](./DATA.md).
 
 # LOCAL PROCESS PHILOSOPHY
 
@@ -288,3 +290,341 @@ Domains:
 * **AI Review:** First-class subsystem for inspecting AI diffs, regenerating, and approving output.
 * **Platforms:** Dedicated integration health (session cookies, auth limits).
 * **Analytics:** Dedicated feedback layer.
+---
+
+# PROJECT LAYOUT
+
+```
+autonomedia/
+├── docs/                    # Canonical documentation
+│   ├── CHANGELOG.md        # Version history
+│   ├── DATA.md             # Database schema and ingestion strategy
+│   ├── FRAMEWORK.md        # Technology stack and architectural patterns
+│   ├── MILESTONES.md       # Milestone tracking and lifecycle
+│   ├── PLAYBOOK.md         # Operational procedures and failure modes
+│   ├── ROADMAP.md          # Project vision and phases
+│   ├── RUNTIME.md          # Execution model and observability
+│   ├── SPEC.md             # System architecture and APIs
+│   ├── AI_FLOW.md          # AI rewrite pipeline documentation
+│   └── STRUCTURE.md        # This file
+├── runtime/                # Ephemeral runtime state
+│   ├── browser_profiles/   # Chromium profiles (auto-generated)
+│   ├── sessions/           # Active session data
+│   └── tmp/                # Temporary files
+├── scripts/                # Operational scripts
+│   ├── checks/             # Health checks and diagnostics
+│   │   ├── check_health.py
+│   │   ├── check_platforms.py
+│   │   ├── check_status.py
+│   │   ├── verify_health.py
+│   │   ├── verify_telegram.py
+│   │   ├── check_all_platforms.py
+│   │   ├── check_data.py
+│   │   └── check_db.py
+│   ├── db/                 # Database migrations and updates
+│   │   ├── migrate_db.py
+│   │   ├── migrate_m10.py
+│   │   ├── migrate_m11.py
+│   │   ├── migrate_m12.py
+│   │   ├── migrate_m13.py
+│   │   ├── migrate_db.py
+│   │   └── verify_db.py
+│   └── [other scripts]     # Ingestion, content management, etc.
+├── storage/                # Persistent outputs
+│   ├── logs/               # Runtime logs
+│   ├── screenshots/        # Browser screenshots
+│   └── exports/            # Published content exports
+├── src/                    # Application code
+│   ├── autonomedia/
+│   │   ├── agents/         # AI agents
+│   │   │   └── posting_secretary/
+│   │   ├── ai/             # AI modules
+│   │   │   ├── analysis.py
+│   │   │   ├── planner.py
+│   │   │   └── rewriting/
+│   │   │       ├── base.py
+│   │   │       ├── context.py
+│   │   │       ├── gemini.py
+│   │   │       └── __init__.py
+│   │   ├── apps/           # Application entry points
+│   │   │   └── worker/
+│   │   ├── content/        # Content processing
+│   │   │   └── transforms/
+│   │   ├── core/           # Core infrastructure
+│   │   │   ├── config/
+│   │   │   ├── db/
+│   │   │   ├── observability/
+│   │   │   │   ├── monitor.py
+│   │   │   │   └── telegram.py
+│   │   │   ├── storage/
+│   │   │   │   └── analysis_storage.py
+│   │   │   ├── utils/
+│   │   │   │   └── verification.py
+│   │   │   ├── worker.py
+│   │   │   ├── logger.py
+│   │   │   ├── posting_routine.py
+│   │   │   ├── security.py
+│   │   │   ├── error_resolver.py
+│   │   │   └── poller.py
+│   │   ├── database/       # Database layer
+│   │   │   ├── client.py
+│   │   │   └── schema.py
+│   │   ├── ingestion/      # Content ingestion
+│   │   │   └── content_ingestor.py
+│   │   ├── platforms/      # Platform-specific handlers
+│   │   │   └── mastodon/
+│   │   │       └── task_handler.py
+│   │   └── web/            # Web application
+│   │       ├── main.py
+│   │       ├── models.py
+│   │       └── api/
+│   │           ├── comments.py
+│   │           ├── content.py
+│   │           └── likes.py
+│   ├── tests/              # Test suites
+│   │   ├── ai/
+│   │   ├── e2e/
+│   │   ├── fixtures/
+│   │   │   └── rewrite/
+│   │   ├── integration/
+│   │   ├── unit/
+│   │   └── [test files]
+│   ├── templates/          # Jinja2 HTML templates
+│   │   ├── base.html
+│   │   ├── content.html
+│   │   ├── dashboard.html
+│   │   ├── index.html
+│   │   ├── partials/
+│   │   │   ├── content_edit_form.html
+│   │   │   ├── content_row.html
+│   │   │   ├── edit_form.html
+│   │   │   └── review_form.html
+│   │   ├── registry.html
+│   │   ├── review.html
+│   │   └── rewrites.html
+│   └── web/                # Web app entry
+│       └── app.py
+├── .venv/                  # Python virtual environment (auto-generated)
+├── .gitignore
+├── .pre-commit-config.yaml
+├── justfile                 # Convenience commands
+├── pyproject.toml          # Project manifest and dependencies
+├── pytest.ini              # Test configuration
+└── README.md               # Project overview
+
+Milestone artifacts in docs/milestones/
+├── archive/                 # Completed milestones (M1-M14)
+│   ├── raw_artifacts/       # Test outputs and verification logs
+│   ├── M1_Content_Idea_Ingestion_AI_Analysis.md
+│   ├── M5B.md
+│   ├── M5C.md
+│   ├── M5X.md
+│   ├── M6.md
+│   ├── M7.md
+│   ├── M8-M11-Archive.md
+│   ├── M12.md
+│   ├── M12-findings.md
+│   ├── M13*.md (all variants)
+│   ├── M14.md
+│   └── [other artifacts]
+├── specs/                   # Active milestone specifications
+│   └── M14S1.md
+├── verifications/           # Active verification documents
+│   └── M14S1V.md
+└── reviews/                 # Active review documents
+    └── M14S1R.md
+
+Test suites
+├── conftest.py              # Pytest configuration
+├── run_scenarios.py         # Scenario-based tests
+├── simple_test.py
+├── [test_m*.py files]       # Milestone-specific tests
+└── [test_*.py files]        # Module-specific tests
+```
+
+# DIRECTORY ROLES
+
+## docs/
+Canonical documentation layer. All project knowledge lives here.
+
+- **MILESTONES.md**: Tracks all milestones with lifecycle status
+- **SPEC.md**: System architecture and public APIs
+- **FRAMEWORK.md**: Technology choices and architectural patterns
+- **PLAYBOOK.md**: Operational procedures and failure mode handling
+- **RUNTIME.md**: Execution model and observability patterns
+- **DATA.md**: Database schema and data flow
+- **ROADMAP.md**: Project vision and phased roadmap
+- **AI_FLOW.md**: AI rewrite pipeline documentation
+- **CHANGELOG.md**: Version history and changes
+
+## runtime/
+Ephemeral state - not committed to git.
+
+- **browser_profiles/**: Chromium profiles for each platform
+- **sessions/**: Active browser sessions
+- **tmp/**: Temporary files
+
+## scripts/
+Operational scripts for maintenance and diagnostics.
+
+- **checks/**: Health checks and status monitoring
+- **db/**: Migrations, updates, and verification utilities
+
+## src/
+Application source code.
+
+- **autonomedia/**: Main package
+  - **core/**: Core infrastructure (workers, logging, DB, observability)
+  - **agents/**: AI agents (PostingSecretary)
+  - **ai/**: AI modules (planner, analysis, rewriting)
+  - **apps/**: Application entry points (worker)
+  - **content/**: Content processing (transforms)
+  - **database/**: Database layer (client, schema)
+  - **ingestion/**: Content ingestion
+  - **platforms/**: Platform-specific handlers
+  - **web/**: Web application (API, templates)
+
+## tests/
+Test suites organized by type.
+
+## storage/
+Persistent outputs - committed to git.
+
+- **logs/**: Runtime logs
+- **screenshots/**: Browser screenshots
+- **exports/**: Published content exports
+
+# MILESTONE LIFECYCLE
+
+1. **Proposal**: Milestone documented in `specs/` directory
+2. **Implementation**: Code and tests added per specification
+3. **Verification**: Verification document created in `verifications/` directory
+4. **Review**: Review document created in `reviews/` directory
+5. **Approval**: Milestone approved by team
+6. **Completion**: All requirements verified, code merged
+7. **Archival**: Moved to `docs/milestones/archive/` with full documentation
+
+# CONFIGURATION
+
+- **pyproject.toml**: Project metadata, dependencies, build config
+- **pytest.ini**: Pytest configuration
+- **.pre-commit-config.yaml**: Git hooks configuration
+- **justfile**: Convenience commands for common tasks
+
+# DEPENDENCY MANAGEMENT
+
+- **Package manager**: `uv` (never pip or poetry)
+- **Dependencies**: Declared in `pyproject.toml`
+- **Virtual environment**: `.venv/` (managed by uv)
+
+# EXECUTION MODEL
+
+## Async-First Runtime
+
+Asyncio throughout. No synchronous blocking.
+
+Main components:
+- scheduler
+- queue
+- workers
+- browser sessions
+- AI rewrite layer
+- analytics logger
+
+## Batch Execution
+
+Currently handled via background task (`asyncio.create_task`), but lacks atomic `batch_id` tracking. If a process interrupts, existing `rewriting` statuses are picked up on restart (potentially duplicating work if not idempotent).
+
+## Error Resolution
+
+`worker.py` utilizes `ErrorResolver.classify()`.
+
+- **Transient**: Triggers auto-retry.
+- **Fatal**: Immediately halts, updating status to `failed` to prevent infinite loops.
+
+## High-Level Flow
+
+```text
+Dashboard (User adds Idea)
+→ Idea saved to DB (status: 'idea')
+→ User approves Idea (status: 'approved')
+→ PostingSecretary (Worker) polls 'approved'
+→ Secretary generates AI rewrites per platform
+→ Secretary validates content via ModerationAdapter
+→ Content staged in DB (status: 'prepared')
+→ Dashboard (User reviews AI output)
+→ User approves specific platform variants (status: 'ready_to_post')
+→ PostingExecutor (Worker) polls 'ready_to_post'
+→ Executor verifies post_history to prevent duplicates
+→ Executor executes browser automation
+→ Executor verifies successful post
+→ Saves logs/screenshots
+→ Promotes content to 'published'
+```
+
+---
+
+# LOGGING POLICY
+
+Structured JSON. Required fields:
+- `timestamp`, `platform`, `task_id`, `worker_id`, `status`, `duration`, `screenshot_path`, `retry_count`, `error_metadata`
+
+---
+
+# BROWSER EXECUTION FLOW
+
+```text
+load persistent profile
+→ validate auth state
+→ open composer
+→ inject rewritten content
+→ submit
+→ verify visible post
+→ capture screenshot
+→ log success/failure
+```
+
+---
+
+# HUMAN-LIKE EXECUTION RULES
+
+Required:
+
+- randomized delays
+- pacing jitter
+- realistic timing
+- avoid robotic execution
+
+Avoid:
+
+- instant interactions
+- burst posting
+- identical timing
+
+---
+
+# FAILURE POLICY
+
+- Failed post: capture screenshot, logs, DOM snapshot.
+- Successful post: capture final screenshot, URL, timestamp.
+
+### Excluded Platform Audit Trail
+
+When platforms are excluded during queue processing, log the exclusion with sufficient context for later auditing. This prevents silent data loss and supports debugging of approval workflow issues.
+
+---
+
+# SESSION RECOVERY
+
+If auth invalid:
+
+- pause posting
+- notify operator
+- require manual recovery
+
+Avoid automatic re-login systems initially.
+
+---
+
+# PI OPERATIONAL ROLE
+- modular services

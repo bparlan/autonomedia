@@ -1,4 +1,3 @@
-from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
@@ -22,8 +21,8 @@ class CreateContentRequest(BaseModel):
 
 
 class UpdateContentRequest(BaseModel):
-    title: Optional[str] = None
-    body: Optional[str] = None
+    title: str | None = None
+    body: str | None = None
 
 
 @router.post("/", response_model=ContentPydantic)
@@ -74,7 +73,7 @@ def update_content(
     return content_item
 
 
-@router.get("/", response_model=List[ContentPydantic])
+@router.get("/", response_model=list[ContentPydantic])
 def get_all_content(
     db: Session = Depends(get_db),
     current_user: UserPydantic = Depends(get_current_user),

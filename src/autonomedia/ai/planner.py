@@ -2,7 +2,6 @@ import json
 import logging
 
 from src.autonomedia.ai.rewriting.context import RewriteContext
-from src.autonomedia.ai.rewriting.gemini import GeminiAIClient
 from src.autonomedia.content.transforms.entity_normalizer import EntityNormalizer
 from src.autonomedia.database.client import DatabaseClient
 

@@ -1,6 +1,6 @@
 # src/autonomedia/core/posting_routine.py
 """
-Daily Posting Routine with Randomized Intervals (M14S1)
+Daily Posting Routine with Randomized Intervals (M15S1) - Updated with Platform Abstraction Layer
 """
 
 import asyncio
@@ -9,14 +9,6 @@ import random
 from datetime import UTC, datetime, timedelta
 
 import structlog
-
-from src.autonomedia.core.utils.verification import (
-    get_verified_at_timestamp,
-    is_platform_verified,
-    parse_verification_status,
-)
-from src.autonomedia.platforms.mastodon.task_handler import publish_mastodon
-from src.autonomedia.database.client import DatabaseClient
 
 # Structured JSON logging
 structlog.configure(processors=[structlog.processors.JSONRenderer()])
@@ -64,11 +56,18 @@ async def _get_verified_content(platform: str) -> list:
     Prioritizes by verified_at (recent first) and handles expiration.
 
     Args:
-        platform: Platform name (e.g., 'mastodon')
+        platform: Platform name (e.g., 'mastodon', 'linkedin', 'x')
 
     Returns:
         List of content rows that are verified and ready to post
     """
+    from src.autonomedia.core.utils.verification import (
+        get_verified_at_timestamp,
+        is_platform_verified,
+        parse_verification_status,
+    )
+    from src.autonomedia.database.client import DatabaseClient
+
     pool = await DatabaseClient.get_pool()
     async with pool.acquire() as conn:
         rows = await conn.fetch(
@@ -167,11 +166,13 @@ async def _get_last_posted_at(platform: str) -> datetime | None:
     Get the most recent posting timestamp for a platform.
 
     Args:
-        platform: Platform name (e.g., 'mastodon')
+        platform: Platform name (e.g., 'mastodon', 'linkedin', 'x')
 
     Returns:
         Most recent created_at from post_history, or None if never posted
     """
+    from src.autonomedia.database.client import DatabaseClient
+
     pool = await DatabaseClient.get_pool()
     async with pool.acquire() as conn:
         row = await conn.fetchrow(
@@ -186,7 +187,7 @@ async def _get_last_posted_at(platform: str) -> datetime | None:
 
 async def posting_routine(dry_run: bool = False, max_items: int = 2):
     """
-    Daily posting routine that processes verified Mastodon content.
+    Daily posting routine that processes verified content using the unified platform abstraction layer.
 
     Args:
         dry_run: If True, skip actual publishing and log intent only
@@ -194,129 +195,195 @@ async def posting_routine(dry_run: bool = False, max_items: int = 2):
     """
     log_event("Starting posting routine", dry_run=dry_run, max_items=max_items)
 
-    # Get verified content
-    verified_items = await _get_verified_content(platform="mastodon")
+    # Get supported platforms from platform abstraction layer
+    from src.autonomedia.core.platform import get_supported_platforms
 
-    if not verified_items:
-        log_event("No verified content available", level="info")
+    platforms = get_supported_platforms()
+    
+    if not platforms:
+        log_event("No platforms are available for posting", level="warning")
         return
 
-    # Check last posted time for second item logic
-    last_posted = await _get_last_posted_at(platform="mastodon")
-    now = datetime.now(UTC)
+    # Process each platform
+    for platform in platforms:
+        log_event(
+            f"Processing platform: {platform}",
+            platform=platform,
+            dry_run=dry_run,
+        )
 
-    # Determine number of items to post
-    items_to_post = []
-    if max_items >= 1:
-        items_to_post.append(verified_items[0])
+        # Get verified content
+        verified_items = await _get_verified_content(platform=platform)
 
-        # Second item only if 8+ hours have passed since last posting
-        # If never posted before (last_posted is None), only post 1 item
-        if max_items >= 2 and last_posted is not None:
-            if (now - last_posted) >= timedelta(hours=SECOND_POST_MIN_HOURS):
-                if len(verified_items) > 1:
-                    items_to_post.append(verified_items[1])
-            else:
+        if not verified_items:
+            log_event(
+                f"No verified content available for {platform}",
+                level="info",
+                platform=platform,
+            )
+            continue
+        
+        # Check last posted time for second item logic
+        last_posted = await _get_last_posted_at(platform=platform)
+        now = datetime.now(UTC)
+
+        # Determine number of items to post
+        items_to_post = []
+        if max_items >= 1:
+            items_to_post.append(verified_items[0])
+
+            # Second item only if 8+ hours have passed since last posting
+            # If never posted before (last_posted is None), only post 1 item
+            if max_items >= 2 and last_posted is not None:
+                if (now - last_posted) >= timedelta(hours=SECOND_POST_MIN_HOURS):
+                    if len(verified_items) > 1:
+                        items_to_post.append(verified_items[1])
+                else:
+                    log_event(
+                        f"Skipping second item - less than {SECOND_POST_MIN_HOURS} hours since last post",
+                        hours_since_last=(now - last_posted).total_seconds() / 3600,
+                        platform=platform,
+                    )
+
+        log_event(
+            f"Items to post for {platform}",
+            count=len(items_to_post),
+            item_ids=[item["id"] for item in items_to_post],
+            platform=platform,
+        )
+
+        # Apply randomized delay between platform batches
+        if len(items_to_post) > 0 and not dry_run:
+            await _apply_randomized_delay()
+
+        pool = await DatabaseClient.get_pool()
+        for item in items_to_post:
+            task_id = item["id"]
+            prepared_content = item.get("prepared_content", {})
+
+            # Handle string format from DB
+            if isinstance(prepared_content, str):
+                try:
+                    prepared_content = json.loads(prepared_content)
+                except (json.JSONDecodeError, TypeError):
+                    prepared_content = {}
+
+            if not prepared_content or not isinstance(prepared_content, dict):
                 log_event(
-                    "Skipping second item - less than 8 hours since last post",
-                    hours_since_last=(now - last_posted).total_seconds() / 3600,
+                    "Invalid prepared_content, skipping",
+                    level="warning",
+                    content_id=task_id,
+                    platform=platform,
                 )
+                continue
 
-    log_event(
-        "Items to post",
-        count=len(items_to_post),
-        item_ids=[item["id"] for item in items_to_post],
-    )
+            content = prepared_content.get(platform, "")
 
-    # Apply randomized delay between platform batches
-    if len(items_to_post) > 0 and not dry_run:
-        await _apply_randomized_delay()
-
-    pool = await DatabaseClient.get_pool()
-    for item in items_to_post:
-        task_id = item["id"]
-        prepared_content = item.get("prepared_content", {})
-
-        # Handle string format from DB
-        if isinstance(prepared_content, str):
+            if dry_run:
+                log_event(
+                    f"Dry-run: would post content to {platform}",
+                    content_id=task_id,
+                    platform=platform,
+                )
+                continue
+            
             try:
-                prepared_content = json.loads(prepared_content)
-            except (json.JSONDecodeError, TypeError):
-                prepared_content = {}
+                # Use unified platform API
+                from src.autonomedia.core.platform import post as unified_post
+                
+                # Prepare options for unified platform API
+                post_options = {
+                    "platform": platform,
+                    "browser_data_dir": "./runtime/browser_profiles",
+                    "task_id": str(task_id),
+                }
 
-        if not prepared_content or not isinstance(prepared_content, dict):
-            log_event(
-                "Invalid prepared_content, skipping",
-                level="warning",
-                content_id=task_id,
-            )
-            continue
+                # Call unified platform API
+                result = await unified_post(content=content, options=post_options)
 
-        content = prepared_content.get("mastodon", "")
+                if result["status"] == "success":
+                    async with pool.acquire() as conn:
+                        await conn.execute(
+                            """
+                            INSERT INTO post_history (
+                                content_id, platform, status, published_url
+                            ) VALUES ($1, $2, 'published', $3)
+                            ON CONFLICT (content_id, platform)
+                            DO UPDATE
+                            SET status = 'published', published_url = $3, error_log = NULL
+                            """,
+                            task_id,
+                            platform,
+                            result.get("result", {}).get("url", ""),
+                        )
 
-        if dry_run:
-            log_event(
-                "Dry-run: would post content", content_id=task_id, platform="mastodon"
-            )
-            continue
+                    log_event(
+                        f"Content posted successfully to {platform}",
+                        task_id=task_id,
+                        platform=platform,
+                        result=result,
+                    )
+                else:
+                    log_event(
+                        f"Failed to post content to {platform}",
+                        level="error",
+                        task_id=task_id,
+                        platform=platform,
+                        error=result.get("error", "Unknown error"),
+                    )
 
-        try:
-            result = await publish_mastodon(content=content, task_id=task_id)
+                    async with pool.acquire() as conn:
+                        await conn.execute(
+                            """
+                            INSERT INTO post_history (
+                                content_id, platform, status, error_log
+                            ) VALUES ($1, $2, 'error', $3)
+                            ON CONFLICT (content_id, platform)
+                            DO UPDATE
+                            SET status = 'error', error_log = $3
+                            """,
+                            task_id,
+                            platform,
+                            result.get("error", "Unknown error"),
+                        )
 
-            async with pool.acquire() as conn:
-                await conn.execute(
-                    """
-                    INSERT INTO post_history (
-                        content_id, platform, status, published_url
-                    ) VALUES ($1, $2, 'published', $3)
-                    ON CONFLICT (content_id, platform)
-                    DO UPDATE
-                    SET status = 'published', published_url = $3, error_log = NULL
-                    """,
-                    task_id,
-                    "mastodon",
-                    result.get("url", ""),
+            except Exception as e:
+                log_event(
+                    f"Failed to post content to {platform}: {str(e)}",
+                    level="error",
+                    task_id=task_id,
+                    platform=platform,
+                    error=str(e),
                 )
 
-            log_event(
-                "Content posted successfully",
-                task_id=task_id,
-                platform="mastodon",
-                result=result,
-            )
-
-        except Exception as e:
-            log_event(
-                f"Failed to post content: {str(e)}",
-                level="error",
-                task_id=task_id,
-                error=str(e),
-            )
-
-            async with pool.acquire() as conn:
-                await conn.execute(
-                    """
-                    INSERT INTO post_history (
-                        content_id, platform, status, error_log
-                    ) VALUES ($1, $2, 'failed', $3)
-                    ON CONFLICT (content_id, platform)
-                    DO UPDATE SET status = 'failed', error_log = $3
-                    """,
-                    task_id,
-                    "mastodon",
-                    str(e),
-                )
+                async with pool.acquire() as conn:
+                    await conn.execute(
+                        """
+                        INSERT INTO post_history (
+                            content_id, platform, status, error_log
+                        ) VALUES ($1, $2, 'error', $3)
+                        ON CONFLICT (content_id, platform)
+                        DO UPDATE
+                        SET status = 'error', error_log = $3
+                        """,
+                        task_id,
+                        platform,
+                        str(e),
+                    )
 
 
 if __name__ == "__main__":
     import sys
 
-    dry_run = "--dry-run" in sys.argv or "-d" in sys.argv
+    dry_run = "--dry-run" in sys.argv
     max_items = 2
 
-    # Parse max_items if provided
-    for arg in sys.argv:
-        if arg.startswith("--max-items="):
-            max_items = int(arg.split("=")[1])
-
+    # Parse max_items from command line
+    for i, arg in enumerate(sys.argv):
+        if arg == "--max-items" and i + 1 < len(sys.argv):
+            try:
+                max_items = int(sys.argv[i + 1])
+            except ValueError:
+                pass
+    
     asyncio.run(posting_routine(dry_run=dry_run, max_items=max_items))

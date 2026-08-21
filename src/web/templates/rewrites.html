@@ -11,7 +11,7 @@
     <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8 flex justify-between items-center">
         <h2 class="text-lg font-bold text-gray-900 dark:text-white">Batch Controls</h2>
         <div>
-            <button hx-post="/batch-generate" hx-target="body" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-lg font-bold shadow-sm transition-colors">Generate Rewrites</button>
+            <button hx-post="/batch-generate" hx-target="#rewrite-tbody" hx-swap="innerHTML" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-lg font-bold shadow-sm transition-colors">Generate Rewrites</button>
             <span class="text-gray-500 ml-2">for Approved Items</span>
         </div>
     </div>
@@ -27,7 +27,7 @@
                     <th class="p-4 font-semibold uppercase text-xs tracking-wider w-32">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody id="rewrite-tbody" class="divide-y divide-gray-100 dark:divide-gray-700">
                 {% for item in items %}
                     {% include 'partials/content_row.html' %}
                 {% endfor %}

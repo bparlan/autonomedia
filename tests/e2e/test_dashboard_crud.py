@@ -18,29 +18,26 @@ async def test_dashboard_edit_content(db_pool):
         async with db_pool.acquire() as conn:
             # Clear existing data for clean state
             await conn.execute("DELETE FROM content WHERE id = $1", content_id)
-            await conn.execute("""
+            await conn.execute(
+                """
                 INSERT INTO content (
-                    id,
-                    topic,
-                    type,
-                    status,
-                    source_idea,
-                    platforms,
-                    created_at
+                    id, topic, type, status, source_idea, platforms, created_at
                 )
                 VALUES ($1, $2, $3, $4, $5, $6, NOW())
-            """, content_id, "E2E-Topic", "TestType", "idea", "Original Idea",
-            json.dumps(["mastodon"])
-            content_id,
-            "E2E-Topic",
-            "TestType",
-            "idea",
-            "Original Idea",
-            json.dumps(["mastodon"])
-        )
-                INSERT INTO content (id, topic, type, status, source_idea, platforms, created_at)
+                """,
+                content_id, "E2E-Topic", "TestType", "idea", "Original Idea", json.dumps(["mastodon"])
+            )
+        
+        # Corrected SQL for INSERT and values assignment
+        await conn.execute(
+            """
+                INSERT INTO content (
+                    id, topic, type, status, source_idea, platforms, created_at
+                )
                 VALUES ($1, $2, $3, $4, $5, $6, NOW())
-            """, content_id, "E2E-Topic", "TestType", "idea", "Original Idea", json.dumps(["mastodon"]))
+            """,
+            content_id, "E2E-Topic", "TestType", "idea", "Original Idea", json.dumps(["mastodon"])
+        )
     
     await setup()
 
@@ -58,7 +55,7 @@ async def test_dashboard_edit_content(db_pool):
         await row.get_by_role("button", name="Edit").click()
         
         async with page.expect_response("/save-content-row/test-e2e-1") as response_info:
-        edit_form = page.locator('form[hx-post="/save-content-row/test-e2e-1"]')
+            edit_form = page.locator('form[hx-post="/save-content-row/test-e2e-1"]')
         await edit_form.wait_for(state="visible")
         await asyncio.sleep(0.5) # Small delay for form rendering
         

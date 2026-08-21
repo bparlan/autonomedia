@@ -1,4 +1,3 @@
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
@@ -44,7 +43,7 @@ def create_comment(comment_data: CreateCommentRequest, db: Session = Depends(get
 
     return new_comment
 
-@router.get("/", response_model=List[CommentPydantic])
+@router.get("/", response_model=list[CommentPydantic])
 def get_comments_for_content(content_id: int, db: Session = Depends(get_db), current_user: UserPydantic = Depends(get_current_user)):
     # Check if content exists
     content_item = db.query(Content).filter(Content.content_id == content_id).first()

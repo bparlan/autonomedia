@@ -1,20 +1,171 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Platform Status</h1>
-    <div class="grid gap-4">
-        {% for h in platform_health %}
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <span class="font-bold capitalize text-gray-900 dark:text-white">{{ h.platform_name }}</span>
-            <div class="flex items-center gap-4">
-                <span class="{% if h.status == 'healthy' %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %} font-bold">
-                    {{ h.status | capitalize }}
-                </span>
-                <button class="text-xs bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition-colors">Connect</button>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl sm:text-4xl font-bold mb-2 text-gray-900 dark:text-white">Platform Status</h1>
+    <p class="text-gray-600 dark:text-gray-400 mb-8">View platform health, constraints, and rate limits</p>
+
+    {% if platforms %}
+    <div class="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+        {% for platform in platforms %}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <!-- Platform Header -->
+            <div class="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex-1">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white capitalize">{{ platform.name }}</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            {% if platform.auth_available %}
+                            <span class="text-green-600 dark:text-green-400 font-medium">• Authentication Available</span>
+                            {% else %}
+                            <span class="text-red-600 dark:text-red-400 font-medium">• No Authentication</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 text-xs font-medium rounded-full
+                            {% if platform.status == 'healthy' %}
+                            bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300
+                            {% elif platform.status == 'unhealthy' %}
+                            bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300
+                            {% else %}
+                            bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300
+                            {% endif %}">
+                            {{ platform.status | capitalize }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Details -->
+            <div id="details-{{ platform.name }}" class="hidden">
+                <div class="p-6 space-y-5">
+                    <!-- Character Limits -->
+                    {% if platform.char_limit %}
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wide">Character Limits</h3>
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{{ platform.char_limit }}</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">max characters</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Tone Guidelines -->
+                    {% if platform.tone %}
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wide">Tone Guidelines</h3>
+                        <div class="flex items-start gap-3 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border-l-4 border-indigo-500">
+                            <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <span class="text-base font-semibold text-indigo-900 dark:text-indigo-100">{{ platform.tone }}</span>
+                                <p class="text-sm text-indigo-800 dark:text-indigo-200 mt-1">
+                                    {% if platform.name == 'linkedin' %}
+                                    Professional tone with clear structure and industry-relevant insights
+                                    {% elif platform.name == 'x' %}
+                                    Concise, punchy messaging optimized for quick scanning
+                                    {% elif platform.name == 'mastodon' %}
+                                    Conversational and engaging storytelling
+                                    {% else %}
+                                    Platform-appropriate tone
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Rate Limits -->
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wide">Rate Limits</h3>
+                        {% if platform.rate_limit %}
+                            <div class="space-y-3">
+                                {% if platform.rate_limit.remaining is not none and platform.rate_limit.limit %}
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Usage</span>
+                                        <span class="text-lg font-bold text-gray-900 dark:text-white">
+                                            {{ platform.rate_limit.remaining }} / {{ platform.rate_limit.limit }}
+                                        </span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 h-3 rounded-full transition-all duration-500"
+                                             style="width: {% if platform.rate_limit.limit %}{{ (platform.rate_limit.remaining / platform.rate_limit.limit * 100) | round(1, 'floor') }}{% else %}0{% endif %}%">
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-right">
+                                        Resets in {{ (platform.rate_limit.window_seconds / 3600) | round(1) }} hours
+                                    </p>
+                                </div>
+                                {% elif platform.rate_limit.note %}
+                                <div class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ platform.rate_limit.note }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Rate limit info unavailable</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Hashtag Limits -->
+                    {% if platform.constraints and platform.constraints.get('hashtags', {}).get('max_count') %}
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wide">Hashtag Limits</h3>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                                Max {{ platform.constraints.hashtags.max_count }} tags
+                            </span>
+                            <span class="text-gray-500 dark:text-gray-400">•</span>
+                            <span class="text-gray-500 dark:text-gray-400">Max {{ platform.constraints.hashtags.max_length }} chars each</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Post Delay -->
+                    {% if platform.constraints and platform.constraints.get('post_delay', {}).get('min') %}
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-medium text-gray-900 dark:text-white uppercase tracking-wide">Post Delay</h3>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                                Min {{ platform.constraints.post_delay.min }}s
+                            </span>
+                            <span class="text-gray-500 dark:text-gray-400">•</span>
+                            <span class="text-gray-500 dark:text-gray-400">Max {{ platform.constraints.post_delay.max }}s</span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Button -->
+                    <button onclick="toggleDetails('{{ platform.name }}')" class="w-full mt-4 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 py-2 border border-indigo-200 dark:border-indigo-800 rounded-lg transition-colors">
+                        Hide Details
+                    </button>
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 text-center">
+        <p class="text-gray-500 dark:text-gray-400 text-lg">No platforms found in database.</p>
+    </div>
+    {% endif %}
 </div>
+
+<script>
+function toggleDetails(platformName) {
+    const detailsElement = document.getElementById('details-' + platformName);
+    const button = event.target;
+    
+    if (detailsElement.classList.contains('hidden')) {
+        detailsElement.classList.remove('hidden');
+        button.textContent = 'Hide Details';
+    } else {
+        detailsElement.classList.add('hidden');
+        button.textContent = 'Show Details';
+    }
+}
+</script>
 {% endblock %}

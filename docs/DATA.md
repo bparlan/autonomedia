@@ -21,10 +21,9 @@ PostgreSQL currently running locally on:
 
 ```text
 localhost:5432
-````
+```
 
 Default databases observed:
-
 * postgres
 * template1
 * bparlan
@@ -34,19 +33,16 @@ Default databases observed:
 # INITIAL DATABASE CREATION
 
 Connect:
-
 ```bash
 psql postgres
 ```
 
 Create database:
-
 ```sql
 CREATE DATABASE autonomedia;
 ```
 
 Connect:
-
 ```bash
 psql autonomedia
 ```
@@ -73,6 +69,7 @@ CREATE TABLE IF NOT EXISTS content (
     scheduled_at TIMESTAMP WITH TIME ZONE,
     error_log TEXT,
     metadata JSONB DEFAULT '{}',
+    verification_status JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 ```
@@ -139,6 +136,27 @@ CREATE TABLE verifications (
 
 ---
 
+## platform_health
+
+Tracks session health and platform availability for operational visibility.
+
+```sql
+CREATE TABLE platform_health (
+    platform_name TEXT PRIMARY KEY,
+    is_healthy BOOLEAN DEFAULT TRUE,
+    last_checked TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    session_status TEXT,
+    error_message TEXT
+);
+```
+
+### Schema Notes
+* `platform_health.is_healthy`: Controls routing decisions; unhealthy platforms are excluded from posting.
+* `platform_health.session_status`: Monitors browser session state (e.g., 'active', 'expired', 'missing').
+* Queried by `/platform-status` endpoint for real-time platform visibility UI.
+
+---
+
 # CONTENT INGESTION STRATEGY
 
 Initial source:
@@ -154,12 +172,10 @@ Future source:
 # TRACKING STRATEGY
 
 Every platform should receive:
-
 * unique UTM parameters
 * per-platform analytics attribution
 
 Example:
-
 ```text
 ?utm_source=x
 ?utm_source=linkedin
@@ -193,7 +209,6 @@ Future analytics may include:
 All screenshots stored locally.
 
 Recommended structure:
-
 ```text
 storage/screenshots/
 ```
@@ -201,7 +216,6 @@ storage/screenshots/
 All logs stored locally.
 
 Recommended structure:
-
 ```text
 storage/logs/
 ```
@@ -211,7 +225,6 @@ storage/logs/
 # FAILURE OBSERVABILITY
 
 Every failure must include:
-
 * structured log
 * screenshot
 * platform metadata

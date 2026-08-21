@@ -1,0 +1,446 @@
+"""Unified platform abstraction layer.
+
+This module provides a unified API for posting content to multiple platforms.
+It handles content normalization, routing to the correct platform handler,
+and manages error handling and logging.
+"""
+
+import asyncio
+import logging
+import random
+import re
+from typing import Any, Dict, List, Optional
+
+from autonomedia.core.platform.base import PlatformHandler
+
+
+# Lazy imports to avoid circular dependencies
+def _get_handlers():
+    from autonomedia.platforms.linkedin.task_handler import LinkedInHandler
+    from autonomedia.platforms.mastodon.task_handler import MastodonHandler
+    from autonomedia.platforms.x.task_handler import XHandler
+    return {
+        "x": XHandler,
+        "linkedin": LinkedInHandler,
+        "mastodon": MastodonHandler,
+    }
+
+
+logger = logging.getLogger("platform_abstraction")
+
+
+# Handler registry (lazy loaded)
+HANDLERS: dict[str, type[PlatformHandler]] = {}
+_registered = False
+
+
+def _ensure_handlers_registered():
+    """Register handlers if not already registered."""
+    global HANDLERS, _registered
+    if not _registered:
+        handlers_dict = _get_handlers()
+        HANDLERS.update(handlers_dict)
+        _registered = True
+
+
+def get_handler(platform_name: str, browser_data_dir: str, task_id: str | None = None) -> PlatformHandler:
+    """Get platform handler instance by name.
+
+    Args:
+        platform_name: Name of the platform (linkedin, x, etc.)
+        browser_data_dir: Browser profile directory
+        task_id: Optional task ID for logging
+
+    Returns:
+        PlatformHandler instance
+
+    Raises:
+        ValueError: If platform is not supported
+    """
+    # Ensure handlers are registered
+    _ensure_handlers_registered()
+    
+    platform_name = platform_name.lower()
+
+    if platform_name not in HANDLERS:
+        supported = ", ".join(sorted(HANDLERS.keys()))
+        raise ValueError(
+            f"Unsupported platform '{platform_name}'. Supported platforms: {supported}"
+        )
+
+    HandlerClass = HANDLERS[platform_name]
+    return HandlerClass(browser_data_dir=browser_data_dir, task_id=task_id)
+
+
+async def normalize_content(content: str, options: dict[str, Any] | None = None) -> str:
+    """Normalize content for posting across all platforms.
+
+    Normalization includes:
+    - Markdown stripping
+    - Whitespace normalization
+    - Field extraction (title, summary, tags)
+    - Platform-specific adjustments
+
+    Args:
+        content: Raw content to normalize
+        options: {
+            "platform": str,
+            "extract_title": bool,
+            "extract_summary": bool,
+            "extract_tags": bool,
+            "max_title_length": int,
+            "max_summary_length": int,
+        }
+
+    Returns:
+        Normalized content ready for posting
+    """
+    options = options or {}
+    platform = options.get("platform", "x")
+
+    # Normalize whitespace
+    content = content.strip()
+    content = re.sub(r"\s+", " ", content)
+
+    # Save original content before truncation
+    original_content = content
+
+    # Extract title if requested
+    if options.get("extract_title", True):
+        max_title_length = options.get("max_title_length", 300)
+        title = content[:max_title_length].strip()
+        content = title
+
+    # Extract summary if requested and original content is longer than title
+    if options.get("extract_summary", True) and len(original_content) > 300:
+        max_summary_length = options.get("max_summary_length", 3000)
+        if summary:
+            content = f"{title}\n\n{summary}" if "title" in locals() else content
+            # Do not append summary again (bug fix)
+            # content should now be "title\n\nsummary"
+
+    # Platform-specific normalization
+    if platform == "linkedin":
+        # Remove trailing period from title if present
+        content = content.rstrip(".")
+
+    return content
+
+
+async def post(content: str, options: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Post content to a platform.
+
+    This is the main unified API for posting content. It handles:
+    - Content normalization
+    - Platform routing
+    - Authentication validation
+    - Retry logic with exponential backoff
+    - Error handling and logging
+
+    Args:
+        content: Raw content to post
+        options: {
+            "platform": str, (required)
+            "article_link": Optional[str],
+            "hashtags": Optional[list],
+            "tags": Optional[list],
+            "no_summary": bool,
+            "batch_mode": bool,
+            "max_delay": float,
+            "browser_data_dir": str,
+            "task_id": Optional[str],
+            "auth_token": Optional[str],
+        }
+
+    Returns:
+        Dict with status and metadata:
+        {
+            "status": "success" | "error",
+            "platform": str,
+            "content": str,
+            "result": Any,
+            "error": Optional[str],
+        }
+
+    Raises:
+        ValueError: If platform is not supported or content is empty
+        Exception: If post fails after all retries
+    """
+    if not options:
+        raise ValueError("Options dictionary is required")
+
+    if "platform" not in options:
+        raise ValueError("Platform must be specified in options")
+
+    if not content or not content.strip():
+        raise ValueError("Content cannot be empty")
+
+    # Extract parameters
+    platform_name = options.get("platform")
+    browser_data_dir = options.get("browser_data_dir", "./runtime/browser_profiles")
+    task_id = options.get("task_id")
+    auth_token = options.get("auth_token")
+
+    # Normalize content first
+    normalized_content = await normalize_content(content, options)
+    options["normalized_content"] = normalized_content
+
+    try:
+        # Get platform handler
+        handler = get_handler(platform_name, browser_data_dir, task_id)
+
+        # Validate auth
+        if not await handler.validate_auth():
+            raise ValueError(f"Authentication failed for platform {platform_name}")
+
+        # Perform post with retry logic
+        result = await handler.with_retry(
+            handler.post, normalized_content, options
+        )
+
+        logger.info(f"Successfully posted to {platform_name}: {normalized_content[:50]}...")
+
+        return {
+            "status": "success",
+            "platform": platform_name,
+            "content": normalized_content,
+            "result": result,
+        }
+
+    except ValueError as e:
+        logger.error(f"Validation error posting to {platform_name}: {str(e)}")
+        return {
+            "status": "error",
+            "platform": platform_name,
+            "content": normalized_content,
+            "error": str(e),
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to post to {platform_name}: {str(e)}")
+        return {
+            "status": "error",
+            "platform": platform_name,
+            "content": normalized_content,
+            "error": str(e),
+        }
+
+
+async def post_to_linkedin(
+    content: str, options: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Convenience function for posting to LinkedIn.
+
+    Args:
+        content: Content to post
+        options: {
+            "browser_data_dir": str,
+            "task_id": Optional[str],
+            "auth_token": Optional[str],
+        }
+
+    Returns:
+        Post result dictionary
+    """
+    options = options or {}
+    options["platform"] = "linkedin"
+    return await post(content, options)
+
+
+async def post_to_x(
+    content: str, options: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Convenience function for posting to X (Twitter).
+
+    Args:
+        content: Content to post
+        options: {
+            "browser_data_dir": str,
+            "task_id": Optional[str],
+            "auth_token": Optional[str],
+            "batch_mode": bool,
+            "max_delay": float,
+        }
+
+    Returns:
+        Post result dictionary
+    """
+    options = options or {}
+    options["platform"] = "x"
+    return await post(content, options)
+
+
+async def batch_post(
+    contents: list[str], options: dict[str, Any] | None = None
+) -> list[dict[str, Any]]:
+    """Post multiple content pieces to the same platform.
+
+    Args:
+        contents: List of content strings
+        options: {
+            "platform": str,
+            "browser_data_dir": str,
+            "task_id": Optional[str],
+            "auth_token": Optional[str],
+        }
+
+    Returns:
+        List of post result dictionaries
+    """
+    options = options or {}
+    platform = options.get("platform")
+
+    if not platform:
+        raise ValueError("Platform must be specified for batch posting")
+
+    handler = get_handler(platform, options.get("browser_data_dir"), options.get("task_id"))
+
+    # Validate auth once
+    if not await handler.validate_auth():
+        raise ValueError(f"Authentication failed for platform {platform}")
+
+    # Use the platform's batch_post method if available
+    if hasattr(handler, "batch_post"):
+        return await handler.batch_post(contents, options)
+
+    # Otherwise, post sequentially with delays
+    results = []
+    for i, content in enumerate(contents):
+        result = await handler.post(content, options)
+        results.append(result)
+
+        # Add delay between posts
+        if i < len(contents) - 1:
+            await asyncio.sleep(random.uniform(5, 10))
+
+    return results
+
+
+def register_handler(platform_name: str, handler_class: type[PlatformHandler]) -> None:
+    """Register a new platform handler.
+
+    This allows dynamic registration of new platform handlers without
+    modifying this module.
+
+    Args:
+        platform_name: Name of the platform
+        handler_class: Handler class to register
+    """
+    _ensure_handlers_registered()
+    HANDLERS[platform_name.lower()] = handler_class
+    logger.info(f"Registered new handler: {platform_name}")
+
+
+
+# Platform constraints configuration
+PLATFORM_CONSTRAINTS: dict[str, dict[str, Any]] = {
+    "linkedin": {
+        "title": {"max_length": 300, "has_period": False},
+        "summary": {"max_length": 3000, "has_period": True},
+        "tags": {"max_count": 5, "max_length": 25},
+        "post_delay": {"min": 5, "max": 10},
+        "tone": "Professional, informative, business-appropriate",
+        "tone_description": "Formal yet engaging, suitable for professional networking and industry insights",
+        "rate_limit": {"interval": "5 minutes", "posts_per_day": 28, "description": "Recommended: 1-2 posts per day"},
+        "authentication": {
+            "type": "OAuth 2.0",
+            "token_storage": "Environment variable or encrypted vault",
+            "requires_refresh": True,
+            "required_fields": ["auth_token"]
+        },
+        "formatting": {
+            "fields_required": ["title", "summary", "tags"],
+            "paragraph_breaks_allowed": True,
+            "emoji_policy": "Professional emojis only (dots for bullets, checkmarks for checklists)"
+        }
+    },
+    "x": {
+        "tweet": {"max_length": 280},
+        "thread_starter": {"max_length": 100},
+        "thread_continuation": {"max_length": 100},
+        "hashtags": {"max_count": 3, "max_length": 25},
+        "post_delay": {"min": 5, "max": 10},
+        "tone": "Punchy, engaging, conversational",
+        "tone_description": "Short, impactful, opinionated or informative hook required",
+        "rate_limit": {"interval": "Daily", "posts_per_day": 10, "description": "Depends on API tier - free tier has limited requests"},
+        "authentication": {
+            "type": "OAuth 2.0",
+            "token_storage": "Environment variable or encrypted vault",
+            "requires_refresh": True,
+            "required_fields": ["auth_token"]
+        },
+        "formatting": {
+            "fields_required": ["content"],
+            "paragraph_breaks_allowed": False,
+            "emoji_policy": "Friendly emojis, few and punchy"
+        }
+    },
+    "mastodon": {
+        "toot": {"max_length": 500},
+        "status": {"max_length": 500},
+        "note": {"max_length": 500},
+        "post_delay": {"min": 3, "max": 8},
+        "tone": "Neutral, informative, community-focused",
+        "tone_description": "Conversational, community-driven, slower pace than X",
+        "rate_limit": {"interval": "2 minutes", "posts_per_day": 30, "description": "Unlimited for most instances"},
+        "authentication": {
+            "type": "OAuth 2.0",
+            "token_storage": "Environment variable or encrypted vault",
+            "requires_refresh": True,
+            "required_fields": ["auth_token"]
+        },
+        "formatting": {
+            "fields_required": ["content"],
+            "paragraph_breaks_allowed": True,
+            "emoji_policy": "Same as X, can use more due to length"
+        }
+    },
+}
+
+
+def get_platform_constraints(platform_name: str) -> dict[str, Any] | None:
+    """Get platform constraints for a specific platform.
+    
+    Args:
+        platform_name: Name of the platform (linkedin, x, mastodon).
+        
+    Returns:
+        Dictionary of constraints for the platform, or None if unknown.
+    """
+    return PLATFORM_CONSTRAINTS.get(platform_name)
+
+
+def adapt_content_for_platform(content: str, platform: str) -> str:
+    """Adapt content for a specific platform.
+    
+    Args:
+        content: Original content to adapt
+        platform: Target platform (linkedin, x, mastodon)
+        
+    Returns:
+        Platform-adapted content
+    """
+    if platform == "linkedin":
+        # Extract title (first ~200 chars) and keep as-is
+        return content[:2000] if len(content) > 2000 else content
+    elif platform == "x":
+        # Truncate to 280 chars with ellipsis if needed
+        if len(content) > 280:
+            return content[:277] + "..."
+        return content
+    elif platform == "mastodon":
+        # Truncate to 500 chars with ellipsis if needed
+        if len(content) > 500:
+            return content[:497] + "..."
+        return content
+    return content
+
+
+def get_supported_platforms() -> list[str]:
+    """Get list of supported platforms.
+
+    Returns:
+        List of platform names
+    """
+    _ensure_handlers_registered()
+    return sorted(HANDLERS.keys())

@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import (
@@ -86,8 +85,8 @@ class UserPydantic(BaseModel):
     user_id: int
     email: str
     username: str
-    display_name: Optional[str] = None
-    bio: Optional[str] = None
+    display_name: str | None = None
+    bio: str | None = None
     created_at: datetime.datetime
     updated_at: datetime.datetime
 
@@ -100,7 +99,7 @@ class ContentPydantic(BaseModel):
     body: str
     created_at: datetime.datetime
     updated_at: datetime.datetime
-    author: Optional[UserPydantic] = None # Include author details
+    author: UserPydantic | None = None # Include author details
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -111,7 +110,7 @@ class CommentPydantic(BaseModel):
     body: str
     created_at: datetime.datetime
     updated_at: datetime.datetime
-    author: Optional[UserPydantic] = None # Include author details
+    author: UserPydantic | None = None # Include author details
 
     model_config = ConfigDict(from_attributes=True)
 

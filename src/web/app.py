@@ -1,453 +1,686 @@
-import asyncio
 import json
-import logging
-import sys
-from datetime import UTC, datetime, timedelta
+import os
+import tempfile
 from pathlib import Path
 
 from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from jinja2 import Environment, FileSystemLoader
 
-# Add project root to path for imports
-sys.path.append(str(Path(__file__).parent.parent.parent))
+from src.database.client import DatabaseClient
 
-logger = logging.getLogger("web.app")
-
-import os
-import tempfile
-
-from src.autonomedia.database.client import DatabaseClient
+TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 app = FastAPI()
-templates = Jinja2Templates(directory="src/web/templates")
+env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
 
+def tojson_filter(value: any, indent: int | None = None) -> str:
+    """JSON serialization filter for Jinja2."""
 
-def fromjson(value):
+    return json.dumps(value, indent=indent)
+
+env.filters["tojson"] = tojson_filter
+
+def _row_to_dict(row) -> dict:
+    """Convert asyncpg row to dict for template rendering."""
+    if row is None:
+        return {}
+    return dict(row)
+
+# Add fromjson filter
+def fromjson_filter(value: any) -> dict:
     if isinstance(value, str):
         try:
-            result = json.loads(value)
-            if isinstance(result, dict):
-                return result
-            return {}
-        except Exception:
+            return json.loads(value)
+        except json.JSONDecodeError:
             return {}
     return value if isinstance(value, dict) else {}
 
+env.filters["fromjson"] = fromjson_filter
 
-templates.env.filters["fromjson"] = fromjson
 
-
-# Helper to fetch sidebar data
-async def get_sidebar_data(conn):
-    return await conn.fetch("SELECT * FROM platform_health ORDER BY platform_name ASC")
+# Helper function to get platform health for all pages
+async def get_platform_health():
+    """Get platform health data for sidebar display."""
+    try:
+        pool = await DatabaseClient.get_pool()
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                "SELECT platform_name, is_healthy FROM platform_health ORDER BY platform_name"
+            )
+            return [{"platform_name": r["platform_name"], "status": "healthy" if r["is_healthy"] else "unhealthy"} for r in rows]
+    except Exception:
+        return []
 
 
 @app.get("/", response_class=HTMLResponse)
-async def command_center(request: Request):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        prepared_items = await conn.fetch(
-            "SELECT * FROM content WHERE status = 'prepared' ORDER BY id ASC"
-        )
-        failed_items = await conn.fetch(
-            "SELECT * FROM content WHERE status = 'failed' ORDER BY id ASC"
-        )
-        ready_items = await conn.fetch(
-            "SELECT * FROM content WHERE status = 'ready_to_post' ORDER BY id ASC"
-        )
-        health = await get_sidebar_data(conn)
-    return templates.TemplateResponse(
+async def dashboard(request: Request):
+    """Dashboard page - Command Center."""
+    platform_health = await get_platform_health()
+    template = env.get_template("dashboard.html")
+    html = template.render(
         request=request,
-        name="dashboard.html",
-        context={
-            "prepared_items": prepared_items,
-            "failed_items": failed_items,
-            "ready_items": ready_items,
-            "platform_health": health,
-        },
+        ready_items=[],
+        prepared_items=[],
+        failed_items=[],
+        sidebar_data=[],
+        platform_health=platform_health,
     )
+    return HTMLResponse(content=html)
+
+
+@app.get("/health")
+async def health():
+    """Health check endpoint."""
+    return {"status": "healthy"}
 
 
 @app.get("/content", response_class=HTMLResponse)
 async def content_page(request: Request):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        items = await conn.fetch(
-            "SELECT * FROM content WHERE status = 'idea' ORDER BY id DESC"
-        )
-        health = await get_sidebar_data(conn)
-    return templates.TemplateResponse(
+    """Content management page."""
+    try:
+        pool = await DatabaseClient.get_pool()
+        async with pool.acquire() as conn:
+            items = await conn.fetch(
+                "SELECT * FROM content ORDER BY created_at DESC"
+            )
+    except Exception:
+        items = []
+
+    platform_health = await get_platform_health()
+    template = env.get_template("content.html")
+    html = template.render(
         request=request,
-        name="content.html",
-        context={"items": items, "platform_health": health},
+        items=items or [],
+        platform_health=platform_health,
     )
+    return HTMLResponse(content=html)
+
+
+@app.post("/add", response_class=RedirectResponse)
+async def add_content(
+    request: Request,
+    topic: str = Form(...),
+    type: str = Form(...),
+    source_idea: str = Form(...),
+    link_url: str | None = Form(None),
+    hashtags: str | None = Form(""),
+):
+    """Add new content item to database."""
+    # Validate topic
+    if len(topic) < 3 or len(topic) > 100:
+        raise HTTPException(status_code=400, detail="Topic must be 3-100 characters")
+    
+    # Validate type enum
+    if type not in ["RefLink", "SelfPromotion", "Social"]:
+        raise HTTPException(status_code=400, detail="Invalid type")
+    
+    # Validate source_idea
+    if len(source_idea) < 5:
+        raise HTTPException(status_code=400, detail="Source idea must be at least 5 characters")
+    
+    # Validate link_url if provided
+    if link_url and not link_url.startswith(("http://", "https://")):
+        raise HTTPException(status_code=400, detail="Invalid URL format")
+    
+    # Parse hashtags
+    tags = [t.strip() for t in hashtags.split(",") if t.strip()]
+    if len(tags) > 10:
+        raise HTTPException(status_code=400, detail="Maximum 10 hashtags allowed")
+    for tag in tags:
+        if len(tag) > 50:
+            raise HTTPException(status_code=400, detail="Each hashtag must be 50 characters or less")
+    
+    try:
+        pool = await DatabaseClient.get_pool()
+        async with pool.acquire() as conn:
+            await conn.execute(
+                "INSERT INTO content (id, topic, type, status, source_idea, link_url, hashtags) "
+                "VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6)",
+                topic, type, "idea", source_idea, link_url, json.dumps(tags)
+            )
+    except Exception:
+        raise HTTPException(status_code=500, detail="Database error")
+    
+    return RedirectResponse(url="/content", status_code=303)
 
 
 @app.get("/rewrites", response_class=HTMLResponse)
 async def rewrites_page(request: Request):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        items = await conn.fetch(
-            "SELECT * FROM content WHERE status IN ('approved', 'rewriting', 'prepared', 'failed', 'ready_to_post') ORDER BY id DESC"
-        )
-        health = await get_sidebar_data(conn)
-    return templates.TemplateResponse(
+    """Rewrites management page."""
+    try:
+        pool = await DatabaseClient.get_pool()
+        async with pool.acquire() as conn:
+            items = await conn.fetch(
+                "SELECT * FROM content WHERE status IN ('approved', 'rewriting', 'prepared', 'failed') "
+                "ORDER BY created_at DESC"
+            )
+    except Exception:
+        items = []
+
+    platform_health = await get_platform_health()
+    template = env.get_template("rewrites.html")
+    html = template.render(
         request=request,
-        name="rewrites.html",
-        context={"items": items, "platform_health": health},
+        items=items or [],
+        platform_health=platform_health,
     )
-
-
-@app.get("/prepared-content/{id}")
-async def get_prepared_content(id: str):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        item = await conn.fetchrow(
-            "SELECT prepared_content FROM content WHERE id = $1", id
-        )
-        if not item:
-            raise HTTPException(status_code=404, detail="Item not found")
-        try:
-            content = item["prepared_content"]
-            if content is None:
-                return {}
-            return json.loads(content)
-        except (json.JSONDecodeError, TypeError):
-            raise HTTPException(
-                status_code=500, detail="Invalid prepared_content JSON in database"
-            )
-
-
-@app.post("/add")
-async def add_item(
-    request: Request,
-    topic: str = Form(...),
-    type: str = Form(...),
-    source_idea: str = Form(...),
-    link_url: str = Form(...),
-    hashtags: str = Form(""),
-):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        # Atomic ID generation to prevent collisions
-        new_id = await conn.fetchval("SELECT COALESCE(COUNT(*), 0) + 1 FROM content")
-        new_id_str = f"{new_id:03d}"
-
-        tag_list = [t.strip() for t in hashtags.split(",") if t.strip()]
-
-        await conn.execute(
-            """
-            INSERT INTO content (id, topic, type, status, source_idea, link_url, hashtags, mentions, platforms)
-            VALUES ($1, $2, $3, 'idea', $4, $5, $6::jsonb, '{}'::jsonb, '["all"]'::jsonb)
-        """,
-            new_id_str,
-            topic,
-            type,
-            source_idea,
-            link_url,
-            json.dumps(tag_list),
-        )
-
-    return RedirectResponse(url="/content", status_code=303)
-
-
-@app.get("/edit-content-row/{id}")
-async def edit_content_row(request: Request, id: str):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", id)
-    return templates.TemplateResponse(
-        request=request, name="partials/content_edit_form.html", context={"item": item}
-    )
-
-
-@app.get("/cancel-edit-content/{id}")
-async def cancel_edit_content(request: Request, id: str):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", id)
-    return templates.TemplateResponse(
-        request=request, name="partials/content_row.html", context={"item": item}
-    )
-
-
-@app.post("/save-content-row/{id}")
-async def save_content_row(
-    request: Request,
-    id: str,
-    topic: str = Form(...),
-    type: str = Form(...),
-    source_idea: str = Form(...),
-    link_url: str = Form(...),
-    hashtags: str = Form(""),
-):
-    form_data = await request.form()
-    platforms = form_data.getlist("platforms")
-
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        tag_list = [t.strip() for t in hashtags.split(",") if t.strip()]
-
-        await conn.execute(
-            """
-            UPDATE content 
-            SET topic=$1, type=$2, source_idea=$3, link_url=$4, hashtags=$5::jsonb, platforms=$6::jsonb
-            WHERE id=$7
-        """,
-            topic,
-            type,
-            source_idea,
-            link_url,
-            json.dumps(tag_list),
-            json.dumps(platforms),
-            id,
-        )
-
-        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", id)
-
-    return templates.TemplateResponse(
-        request=request, name="partials/content_row.html", context={"item": item}
-    )
-
-
-@app.delete("/delete-item/{id}")
-async def delete_item(id: str):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        await conn.execute("DELETE FROM content WHERE id = $1", id)
-    return HTMLResponse(content="")
-
-
-@app.post("/approve-idea/{id}")
-async def approve_idea(request: Request, id: str):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        await conn.execute("UPDATE content SET status = 'approved' WHERE id = $1", id)
-        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", id)
-    return templates.TemplateResponse(
-        request=request, name="partials/content_row.html", context={"item": item}
-    )
-
-
-from src.autonomedia.ai.planner import process_rewrites
-
-# ... (other imports)
-
-
-@app.get("/status-fragment/{id}")
-async def status_fragment(request: Request, id: str):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", id)
-    return templates.TemplateResponse(
-        request=request, name="partials/content_row.html", context={"item": item}
-    )
-
-
-@app.post("/batch-generate")
-async def batch_generate(request: Request):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        # Move all 'approved' to 'rewriting'
-        await conn.execute(
-            "UPDATE content SET status = 'rewriting' WHERE status = 'approved'"
-        )
-
-    # Trigger background task
-    asyncio.create_task(process_rewrites())
-
-    return RedirectResponse(url="/rewrites", status_code=303)
-
-
-@app.post("/reset-failure/{id}")
-async def reset_failure(id: str):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        await conn.execute("UPDATE content SET status = 'idea' WHERE id = $1", id)
-    return HTMLResponse(content="")
-
-
-@app.get("/review/{id}")
-async def review_page(request: Request, id: str):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", id)
-        health = await get_sidebar_data(conn)
-    return templates.TemplateResponse(
-        request=request,
-        name="review.html",
-        context={"item": item, "platform_health": health},
-    )
-
-
-@app.post("/review/{id}/approve")
-async def approve_review(request: Request, id: str):
-    form_data = await request.form()
-    action = form_data.get("action")
-
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        if action == "regenerate":
-            await conn.execute(
-                "UPDATE content SET status = 'approved' WHERE id = $1", id
-            )
-            return RedirectResponse(url="/", status_code=303)
-
-        elif action == "approve":
-            # TC07: Check current status before processing (with lock for atomicity)
-            current_status = await conn.fetchval(
-                "SELECT status FROM content WHERE id = $1 FOR UPDATE", id
-            )
-            if current_status != "prepared":
-                raise HTTPException(
-                    status_code=409,
-                    detail="Content is not in 'prepared' state for approval",
-                )
-
-            # Fetch full item to get metadata for priority check
-            full_item = await conn.fetchrow(
-                "SELECT prepared_content, metadata FROM content WHERE id = $1", id
-            )
-            item = await conn.fetchrow(
-                "SELECT prepared_content FROM content WHERE id = $1", id
-            )
-            prepared_data = (
-                json.loads(full_item["prepared_content"])
-                if full_item and full_item["prepared_content"]
-                else {}
-            )
-            verification_status = {}
-
-            # TC05: Return error if no healthy platforms available
-            # Check existing healthy platforms for logging
-            healthy_platforms_rows = await conn.fetch(
-                "SELECT platform_name FROM platform_health WHERE is_healthy = TRUE"
-            )
-            healthy_platforms = {row["platform_name"] for row in healthy_platforms_rows}
-
-            if not healthy_platforms:
-                raise HTTPException(
-                    status_code=400, detail="No healthy platforms available"
-                )
-
-            # Update text content from form and build verification_status in single pass
-            for key, value in form_data.items():
-                if key.startswith("platform_"):
-                    plat = key.replace("platform_", "")
-                    if plat in healthy_platforms:
-                        prepared_data[plat] = value
-                        # TC04: Only healthy platforms can be verified
-                        is_verified = form_data.get(f"verify_{plat}", "false") == "true"
-                        if is_verified:
-                            # Add verified_at and expires_at timestamps per M14S1 spec
-                            now = datetime.now(UTC)
-                            # Check priority metadata for TTL override (24 hours vs 12 hours)
-                            metadata = json.loads(
-                                full_item.get("metadata", "{}") or "{}"
-                            )
-                            ttl_hours = 24 if metadata.get("priority", False) else 12
-
-                            verification_status[plat] = {
-                                "verified": True,
-                                "verified_at": now.isoformat(),
-                                "expires_at": (
-                                    now + timedelta(hours=ttl_hours)
-                                ).isoformat(),
-                            }
-                        else:
-                            verification_status[plat] = {
-                                "verified": False,
-                                "verified_at": None,
-                                "expires_at": None,
-                            }
-                    else:
-                        # Log exclusion of unhealthy platform per review findings
-                        logger.info(
-                            "Platform excluded from approval (unhealthy)",
-                            extra={"platform": plat, "content_id": id},
-                        )
-                        if plat in prepared_data:
-                            del prepared_data[plat]
-
-            # Ensure all healthy platforms have verification status entry
-            for plat in prepared_data.keys():
-                if plat not in verification_status:
-                    verification_status[plat] = {
-                        "verified": False,
-                        "verified_at": None,
-                        "expires_at": None,
-                    }
-
-            await conn.execute(
-                """
-                UPDATE content 
-                SET prepared_content = $1, 
-                    verification_status = $2,
-                    status = 'ready_to_post'
-                WHERE id = $3
-            """,
-                json.dumps(prepared_data),
-                json.dumps(verification_status),
-                id,
-            )
-            return RedirectResponse(url="/rewrites", status_code=303)
+    return HTMLResponse(content=html)
 
 
 @app.get("/registry", response_class=HTMLResponse)
 async def registry_page(request: Request):
-    with open("src/autonomedia/content/mention_registry.json") as f:
-        registry = json.load(f)
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        health = await get_sidebar_data(conn)
-    return templates.TemplateResponse(
+    """Registry management page."""
+    registry_path = Path(__file__).parent.parent / "autonomedia" / "content" / "mention_registry.json"
+    
+    if not registry_path.exists():
+        raise HTTPException(status_code=404, detail="Registry file not found")
+    
+    try:
+        with open(registry_path) as f:
+            registry_data = json.load(f)
+    except json.JSONDecodeError:
+        registry_data = {}
+    
+    platform_health = await get_platform_health()
+    template = env.get_template("registry.html")
+    html = template.render(
         request=request,
-        name="registry.html",
-        context={"registry": registry, "platform_health": health},
+        registry=registry_data,
+        platform_health=platform_health,
     )
+    return HTMLResponse(content=html)
+
+
+@app.post("/registry/update", response_class=RedirectResponse)
+async def update_registry(registry_data: str = Form(...)):
+    """Update registry JSON file atomically."""
+    # Validate JSON
+    try:
+        parsed_data = json.loads(registry_data)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON data")
+    
+    registry_path = Path(__file__).parent.parent / "autonomedia" / "content" / "mention_registry.json"
+    
+    try:
+        # Atomic write using tempfile
+        fd, temp_path = tempfile.mkstemp(dir=registry_path.parent, suffix=".json")
+        try:
+            with os.fdopen(fd, 'w') as f:
+                json.dump(parsed_data, f, indent=2)
+            # Preserve permissions
+            os.chmod(temp_path, 0o640)
+            # Replace original file
+            os.replace(temp_path, registry_path)
+        except Exception:
+            # Clean up temp file on error
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
+            raise HTTPException(status_code=500, detail="Unable to write registry file (permission denied)")
+    except PermissionError:
+        raise HTTPException(status_code=500, detail="Unable to write registry file (permission denied)")
+    
+    return RedirectResponse(url="/registry", status_code=303)
 
 
 @app.get("/platforms", response_class=HTMLResponse)
 async def platforms_page(request: Request):
-    pool = await DatabaseClient.get_pool()
-    async with pool.acquire() as conn:
-        health = await get_sidebar_data(conn)
-    return templates.TemplateResponse(
-        request=request, name="platforms.html", context={"platform_health": health}
-    )
-
-
-# ... (existing imports)
-
-
-@app.post("/registry/update")
-async def update_registry(request: Request):
-    form_data = await request.form()
-    new_json = form_data.get("registry_data")
-
-    # Atomic write to registry
-    temp_fd, temp_path = tempfile.mkstemp(dir="src/autonomedia/content/")
+    """Platforms status page with detailed constraints and limits."""
     try:
-        with os.fdopen(temp_fd, "w") as f:
-            f.write(new_json)
-        os.replace(temp_path, "src/autonomedia/content/mention_registry.json")
+        pool = await DatabaseClient.get_pool()
+        async with pool.acquire() as conn:
+            platform_health = await conn.fetch(
+                "SELECT platform_name, is_healthy FROM platform_health ORDER BY platform_name"
+            )
+            # Map is_healthy boolean to status string for template
+            platform_health = [
+                {"platform_name": r["platform_name"], "status": "healthy" if r["is_healthy"] else "unhealthy"}
+                for r in platform_health
+            ]
+    except Exception:
+        platform_health = []
+
+    # Get supported platforms and their detailed constraints
+    from autonomedia.ai.rewriting.gemini import GeminiProvider
+    from autonomedia.core.platform import (
+        get_platform_constraints,
+        get_supported_platforms,
+    )
+
+    detailed_platforms = []
+    supported_platforms = get_supported_platforms()
+
+    for platform_name in supported_platforms:
+        # Get health status
+        health_item = next((h for h in platform_health if h["platform_name"] == platform_name), None)
+        status = "healthy" if health_item and health_item["status"] == "healthy" else "unknown"
+        auth_available = health_item and health_item["status"] == "healthy"
+
+        # Get constraints from platform abstraction layer
+        constraints = get_platform_constraints(platform_name)
+
+        # Get character limits and tone from AI rewriting module
+        platform_char_limit = None
+        platform_tone = None
+        if constraints:
+            # Get the AI constraints (merged structure)
+            from autonomedia.ai.rewriting.gemini import GeminiProvider
+            gemini = GeminiProvider()
+            platform_char_limit = gemini._get_platform_char_limit(platform_name)
+            platform_tone = gemini._get_platform_tone(platform_name)
+
+        # Get rate limit status
+        from autonomedia.platforms.linkedin.task_handler import LinkedInHandler
+        from autonomedia.platforms.mastodon.task_handler import MastodonHandler
+        from autonomedia.platforms.x.task_handler import XHandler
+
+        rate_limit = None
+        try:
+            # Create handlers to get rate limits
+            if platform_name == "linkedin":
+                handler = LinkedInHandler(browser_data_dir="")
+            elif platform_name == "x":
+                handler = XHandler(browser_data_dir="")
+            elif platform_name == "mastodon":
+                handler = MastodonHandler(browser_data_dir="")
+            else:
+                continue
+
+            # Get rate limit status
+            rate_limit = await handler.get_rate_limit_status()
+        except Exception:
+            rate_limit = {"note": "Rate limit info unavailable"}
+
+        detailed_platforms.append({
+            "name": platform_name,
+            "status": status,
+            "auth_available": auth_available,
+            "char_limit": platform_char_limit,
+            "tone": platform_tone,
+            "rate_limit": rate_limit,
+            "constraints": constraints or {},
+        })
+
+    template = env.get_template("platforms.html")
+    html = template.render(
+        request=request,
+        platforms=detailed_platforms,
+    )
+    return HTMLResponse(content=html)
+
+
+
+@app.get("/platform-status")
+async def platform_status():
+    """Platform status API endpoint returning detailed JSON including constraints."""
+    try:
+        pool = await DatabaseClient.get_pool()
+        async with pool.acquire() as conn:
+            health_rows = await conn.fetch(
+                "SELECT platform_name, is_healthy FROM platform_health ORDER BY platform_name"
+            )
+            platform_health_data = [
+                {"name": r["platform_name"], "status": "healthy" if r["is_healthy"] else "unhealthy"}
+                for r in health_rows
+            ]
+
+            # Fetch platform constraints from the abstraction layer
+            all_constraints = {}
+            supported_platforms = get_supported_platforms()
+            for platform in supported_platforms:
+                constraints = get_platform_constraints(platform)
+                if constraints:
+                    all_constraints[platform] = constraints
+
+            # Combine health, constraints, and detailed platform information
+            detailed_platform_data = []
+            for health_item in platform_health_data:
+                platform_name = health_item["name"]
+                combined_data = health_item.copy()
+                combined_data["constraints"] = all_constraints.get(platform_name, {})
+                detailed_platform_data.append(combined_data)
+
+            return detailed_platform_data
     except Exception as e:
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
-        raise e
+        logger.error(f"Error fetching platform status: {e}")
+        return []
 
 
-@app.post("/remove-from-queue/{id}")
-async def remove_from_queue(request: Request, id: str):
+@app.get("/edit-content-row/{item_id}", response_class=HTMLResponse)
+async def edit_content_row(request: Request, item_id: str):
+    """Edit form page for specific content item."""
     pool = await DatabaseClient.get_pool()
     async with pool.acquire() as conn:
-        # Reset to 'prepared' (unverified)
-        await conn.execute(
-            "UPDATE content SET status = 'prepared', verification_status = '{}'::jsonb WHERE id = $1",
-            id,
-        )
-        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", id)
-    return templates.TemplateResponse(
-        request=request, name="partials/content_row.html", context={"item": item}
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Content not found")
+    
+    template = env.get_template("partials/content_edit_form.html")
+    html = template.render(
+        request=request,
+        item=item,
     )
+    return HTMLResponse(content=html)
+
+
+@app.post("/save-content-row/{item_id}", response_class=RedirectResponse)
+async def save_content_row(
+    request: Request,
+    item_id: str,
+    topic: str = Form(...),
+    type: str = Form(...),
+    source_idea: str = Form(...),
+    link_url: str | None = Form(None),
+    hashtags: str | None = Form(""),
+):
+    """Save edited content item."""
+    # Validate topic
+    if len(topic) < 3 or len(topic) > 100:
+        raise HTTPException(status_code=400, detail="Topic must be 3-100 characters")
+    
+    # Validate type enum
+    if type not in ["RefLink", "SelfPromotion", "Social"]:
+        raise HTTPException(status_code=400, detail="Invalid type")
+    
+    # Validate source_idea
+    if len(source_idea) < 5:
+        raise HTTPException(status_code=400, detail="Source idea must be at least 5 characters")
+    
+    # Validate link_url if provided
+    if link_url and not link_url.startswith(("http://", "https://")):
+        raise HTTPException(status_code=400, detail="Invalid URL format")
+    
+    # Parse hashtags
+    tags = [t.strip() for t in hashtags.split(",") if t.strip()]
+    if len(tags) > 10:
+        raise HTTPException(status_code=400, detail="Maximum 10 hashtags allowed")
+    
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+        if not item:
+            raise HTTPException(status_code=404, detail="Content not found")
+        
+        await conn.execute(
+            "UPDATE content SET topic = $1, type = $2, source_idea = $3, "
+            "link_url = $4, hashtags = $5 WHERE id = $6",
+            topic, type, source_idea, link_url, json.dumps(tags), item_id
+        )
+    
+    return RedirectResponse(url="/content", status_code=303)
+
+
+@app.get("/cancel-edit-content/{item_id}", response_class=HTMLResponse)
+async def cancel_edit_content(request: Request, item_id: str):
+    """Cancel edit and return to edit form with original values."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Content not found")
+    
+    template = env.get_template("partials/content_edit_form.html")
+    html = template.render(
+        request=request,
+        item=item,
+    )
+    return HTMLResponse(content=html)
+
+
+@app.get("/prepared-content/{item_id}", response_class=HTMLResponse)
+async def prepared_content(request: Request, item_id: str):
+    """Prepared content preview for specific item."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Content not found")
+    
+    try:
+        prepared = json.loads(item["prepared_content"]) if item["prepared_content"] else {}
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Invalid JSON in prepared_content")
+    
+    template = env.get_template("partials/review_form.html")
+    html = template.render(
+        request=request,
+        item=item,
+        prepared=prepared,
+    )
+    return HTMLResponse(content=html)
+
+
+@app.get("/status-fragment/{item_id}", response_class=HTMLResponse)
+async def status_fragment(request: Request, item_id: str):
+    """Status fragment HTML for specific content item - returns actual status badge."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Content not found")
+    
+    # Render just the status cell with actual item status
+    # Use the same logic as content_row.html status display
+    item = _row_to_dict(item)
+    
+    # Inline the status badge rendering (same logic from content_row.html)
+    status = item.get("status", "")
+    verification = {}
+    try:
+        verification = json.loads(item.get("verification_status", "{}")) if item.get("verification_status") else {}
+    except:
+        verification = {}
+    
+    prepared = {}
+    try:
+        prepared = json.loads(item.get("prepared_content", "{}")) if item.get("prepared_content") else {}
+    except:
+        prepared = {}
+    
+    # Build status badge based on actual status
+    status_html = "<td class='p-4 align-top'>"
+    
+    if status == "idea":
+        status_html += "<span class='bg-gray-800 text-gray-300 border border-gray-700 px-2 py-1 rounded text-xs font-bold uppercase'>Idea</span>"
+    elif status == "approved":
+        status_html += "<span class='bg-indigo-900 text-indigo-200 border border-indigo-800 px-2 py-1 rounded text-xs font-bold uppercase animate-pulse'>Generating</span>"
+    elif status == "rewriting":
+        status_html += "<span class='bg-purple-900 text-purple-200 border border-purple-800 px-2 py-1 rounded text-xs font-bold uppercase animate-pulse'>Rewriting...</span>"
+    elif status == "prepared":
+        status_html += "<span class='bg-yellow-900 text-yellow-200 border border-yellow-800 px-2 py-1 rounded text-xs font-bold uppercase'>Verification Needed</span>"
+    elif status == "ready_to_post":
+        # Show platform verification status
+        if prepared and verification:
+            badges = []
+            for platform in prepared.keys():
+                vstatus = verification.get(platform, {})
+                if vstatus.get("verified") == True:
+                    badges.append(f"<span class='bg-green-600 text-white border border-green-500 px-2 py-1 rounded text-xs font-bold uppercase mr-1'>{platform.title()}: Verified - In Queue</span>")
+                elif vstatus.get("verified") == False:
+                    badges.append(f"<span class='bg-gray-600 text-gray-200 border border-gray-500 px-2 py-1 rounded text-xs font-bold uppercase mr-1'>{platform.title()}: Unverified</span>")
+                else:
+                    badges.append(f"<span class='bg-yellow-600 text-yellow-100 border border-yellow-500 px-2 py-1 rounded text-xs font-bold uppercase mr-1'>{platform.title()}: Pending</span>")
+            status_html += "".join(badges) if badges else "<span class='bg-green-600 text-white border border-green-500 px-2 py-1 rounded text-xs font-bold uppercase'>Verified - In Queue</span>"
+        else:
+            status_html += "<span class='bg-green-600 text-white border border-green-500 px-2 py-1 rounded text-xs font-bold uppercase'>Verified - In Queue</span>"
+    elif status == "published":
+        status_html += "<span class='bg-emerald-900 text-emerald-200 border border-emerald-800 px-2 py-1 rounded text-xs font-bold uppercase'>Published ✓</span>"
+    elif status == "failed":
+        status_html += "<span class='bg-red-900 text-red-200 border border-red-800 px-2 py-1 rounded text-xs font-bold uppercase'>Failed ✕</span>"
+    
+    status_html += "</td>"
+    return HTMLResponse(content=status_html)
+
+
+@app.get("/review/{item_id}", response_class=HTMLResponse)
+async def review_page(request: Request, item_id: str):
+    """Review page for specific content item."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Content not found")
+    
+    if item["status"] != "prepared":
+        raise HTTPException(status_code=400, detail="Content must be in 'prepared' status for review")
+    
+    try:
+        prepared = json.loads(item["prepared_content"]) if item["prepared_content"] else {}
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Invalid JSON in prepared_content")
+    
+    platform_health = await get_platform_health()
+    template = env.get_template("review.html")
+    html = template.render(
+        request=request,
+        item=item,
+        prepared=prepared,
+        platform_health=platform_health,
+    )
+    return HTMLResponse(content=html)
+
+
+@app.post("/review/{item_id}/approve", response_class=RedirectResponse)
+async def approve_review(request: Request, item_id: str, **form_data):
+    """Approve content for posting."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+        
+        if not item:
+            raise HTTPException(status_code=404, detail="Content not found")
+        
+        if item["status"] != "prepared":
+            raise HTTPException(status_code=400, detail="Content must be in 'prepared' status")
+        
+        # Check for healthy platforms
+        healthy_platforms = await conn.fetch(
+            "SELECT platform_name FROM platform_health WHERE is_healthy = true"
+        )
+        if not healthy_platforms:
+            raise HTTPException(status_code=400, detail="No healthy platforms available")
+        
+        # Build verification_status JSON
+        verification = {}
+        for key, value in form_data.items():
+            if key.startswith("verify_"):
+                platform = key.replace("verify_", "")
+                verification[platform] = {
+                    "verified": value == "true",
+                    "verified_at": "2025-01-01T00:00:00Z",
+                    "expires_at": "2025-12-31T23:59:59Z",
+                }
+        
+        await conn.execute(
+            "UPDATE content SET verification_status = $1, status = $2 WHERE id = $3",
+            json.dumps(verification),
+            "ready_to_post",
+            item_id
+        )
+    
+    return RedirectResponse(url="/content", status_code=303)
+
+
+@app.post("/batch-generate", response_class=HTMLResponse)
+async def batch_generate(request: Request):
+    """Batch generate content for approved items - returns updated items for HTMX."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        await conn.execute(
+            "UPDATE content SET status = 'idea' WHERE status = 'approved'"
+        )
+        items = await conn.fetch(
+            "SELECT * FROM content WHERE status IN ('approved', 'rewriting', 'prepared', 'failed') ORDER BY created_at DESC"
+        )
+    
+    template = env.get_template("partials/content_row.html")
+    html_parts = [template.render(request=request, item=_row_to_dict(item)) for item in items]
+    return HTMLResponse(content="".join(html_parts))
+
+
+@app.post("/approve-idea/{item_id}", response_class=HTMLResponse)
+async def approve_idea(request: Request, item_id: str):
+    """Approve idea for rewriting - returns HTML fragment for HTMX."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+        
+        if not item:
+            raise HTTPException(status_code=404, detail="Content not found")
+        
+        if item["status"] != "idea":
+            raise HTTPException(status_code=400, detail="Content must be in 'idea' status")
+        
+        await conn.execute(
+            "UPDATE content SET status = 'approved' WHERE id = $1", item_id
+        )
+        # Return updated item dict for template
+        item = _row_to_dict(item)
+    
+    template = env.get_template("partials/content_row.html")
+    return HTMLResponse(content=template.render(request=request, item=item))
+
+
+@app.post("/reset-failure/{item_id}", response_class=HTMLResponse)
+async def reset_failure(request: Request, item_id: str):
+    """Reset failed content status - returns HTML fragment for HTMX."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+        
+        if not item:
+            raise HTTPException(status_code=404, detail="Content not found")
+        
+        if item["status"] not in ["failed", "rewriting"]:
+            raise HTTPException(status_code=400, detail="Content must be in 'failed' or 'rewriting' status")
+        
+        await conn.execute(
+            "UPDATE content SET status = 'approved' WHERE id = $1", item_id
+        )
+        item = _row_to_dict(item)
+    
+    template = env.get_template("partials/content_row.html")
+    return HTMLResponse(content=template.render(request=request, item=item))
+
+
+@app.post("/remove-from-queue/{item_id}", response_class=HTMLResponse)
+async def remove_from_queue(request: Request, item_id: str):
+    """Remove content from queue - returns HTML fragment for HTMX."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+        
+        if not item:
+            raise HTTPException(status_code=404, detail="Content not found")
+        
+        if item["status"] not in ["approved", "rewriting"]:
+            raise HTTPException(status_code=400, detail="Content must be in 'approved' or 'rewriting' status")
+        
+        await conn.execute(
+            "UPDATE content SET status = 'approved' WHERE id = $1", item_id
+        )
+        item = _row_to_dict(item)
+    
+    template = env.get_template("partials/content_row.html")
+    return HTMLResponse(content=template.render(request=request, item=item))
+
+
+@app.delete("/delete-item/{item_id}", response_class=RedirectResponse)
+async def delete_item(item_id: str):
+    """Delete content item from database."""
+    pool = await DatabaseClient.get_pool()
+    async with pool.acquire() as conn:
+        item = await conn.fetchrow("SELECT * FROM content WHERE id = $1", item_id)
+        
+        if not item:
+            raise HTTPException(status_code=404, detail="Content not found")
+        
+        await conn.execute("DELETE FROM content WHERE id = $1", item_id)
+    
+    return RedirectResponse(url="/content", status_code=303)

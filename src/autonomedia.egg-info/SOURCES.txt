@@ -49,6 +49,9 @@ src/autonomedia/core/db/__init__.py
 src/autonomedia/core/observability/__init__.py
 src/autonomedia/core/observability/monitor.py
 src/autonomedia/core/observability/telegram.py
+src/autonomedia/core/platform/__init__.py
+src/autonomedia/core/platform/base.py
+src/autonomedia/core/storage/analysis_storage.py
 src/autonomedia/core/utils/__init__.py
 src/autonomedia/core/utils/verification.py
 src/autonomedia/ingestion/content_ingestor.py
@@ -56,11 +59,14 @@ src/autonomedia/platforms/__init__.py
 src/autonomedia/platforms/bluesky/__init__.py
 src/autonomedia/platforms/facebook_pages/__init__.py
 src/autonomedia/platforms/linkedin/__init__.py
+src/autonomedia/platforms/linkedin/handler.py
+src/autonomedia/platforms/linkedin/task_handler.py
 src/autonomedia/platforms/mastodon/__init__.py
 src/autonomedia/platforms/mastodon/selectors.py
 src/autonomedia/platforms/mastodon/task_handler.py
 src/autonomedia/platforms/threads/__init__.py
 src/autonomedia/platforms/x/__init__.py
+src/autonomedia/platforms/x/task_handler.py
 src/autonomedia/web/main.py
 src/autonomedia/web/models.py
 src/autonomedia/web/api/comments.py
