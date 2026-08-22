@@ -11,7 +11,10 @@ from src.database.client import DatabaseClient
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
+from fastapi.staticfiles import StaticFiles
+
 app = FastAPI()
+app.mount("/autogen", StaticFiles(directory="src"), name="autogen")
 env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
 
 def tojson_filter(value: any, indent: int | None = None) -> str:
@@ -37,42 +40,42 @@ def fromjson_filter(value: any) -> dict:
     return value if isinstance(value, dict) else {}
 
 env.filters["fromjson"] = fromjson_filter
-
+# Health API endpoint
+from autonomedia.web.router import router
+app.include_router(router)
+from autonomedia.api.health import get_health_status
 
 # Helper function to get platform health for all pages
 async def get_platform_health():
     """Get platform health data for sidebar display."""
     try:
-        pool = await DatabaseClient.get_pool()
-        async with pool.acquire() as conn:
-            rows = await conn.fetch(
-                "SELECT platform_name, is_healthy FROM platform_health ORDER BY platform_name"
-            )
-            return [{"platform_name": r["platform_name"], "status": "healthy" if r["is_healthy"] else "unhealthy"} for r in rows]
-    except Exception:
+        from autonomedia.checks.healthcheck import _get_status_data
+        results = await _get_status_data()
+        return results
+    except Exception as e:
         return []
-
-
-@app.get("/", response_class=HTMLResponse)
-async def dashboard(request: Request):
-    """Dashboard page - Command Center."""
-    platform_health = await get_platform_health()
-    template = env.get_template("dashboard.html")
-    html = template.render(
-        request=request,
-        ready_items=[],
-        prepared_items=[],
-        failed_items=[],
-        sidebar_data=[],
-        platform_health=platform_health,
-    )
-    return HTMLResponse(content=html)
+@app.get("/api/health")
+async def api_health():
+    """Health check API endpoint."""
+    return await get_health_status()
 
 
 @app.get("/health")
-async def health():
-    """Health check endpoint."""
-    return {"status": "healthy"}
+async def health_dashboard(request: Request):
+    """Health dashboard page - Infrastructure health metrics."""
+    platform_health = await get_platform_health()
+    ready_items = []
+    prepared_items = []
+    failed_items = []
+    template = env.get_template("health_dashboard.html")
+    html = template.render(
+        request=request,
+        ready_items=ready_items,
+        prepared_items=prepared_items,
+        failed_items=failed_items,
+        platform_health=platform_health,
+    )
+    return HTMLResponse(content=html)
 
 
 @app.get("/content", response_class=HTMLResponse)
@@ -684,3 +687,11 @@ async def delete_item(item_id: str):
         await conn.execute("DELETE FROM content WHERE id = $1", item_id)
     
     return RedirectResponse(url="/content", status_code=303)
+
+
+@app.get("/", response_class=HTMLResponse)
+async def command_center(request: Request):
+    """Command Center page - main operational dashboard."""
+    template = env.get_template("dashboard.html")
+    html = template.render(request=request)
+    return HTMLResponse(content=html)

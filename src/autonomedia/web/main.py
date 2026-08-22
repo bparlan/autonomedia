@@ -4,6 +4,8 @@ from fastapi.responses import JSONResponse
 from src.autonomedia.web.api.comments import router as comments_router
 from src.autonomedia.web.api.content import router as content_router
 from src.autonomedia.web.api.likes import router as likes_router
+from src.autonomedia.web.router import router as web_router
+from src.autonomedia.api.router import api_router
 
 app = FastAPI()
 
@@ -14,19 +16,12 @@ async def root():
     return JSONResponse({
         "status": "ok",
         "service": "autonomedia-api",
-        "endpoints": ["/content", "/comments", "/likes", "/health"]
-    })
-
-
-@app.get("/health")
-async def health():
-    """Health check endpoint."""
-    return JSONResponse({
-        "status": "healthy",
-        "timestamp": "2026-07-09T00:00:00Z"
+        "endpoints": ["/content", "/comments", "/likes", "/api/health", "/health"]
     })
 
 
 app.include_router(comments_router)
 app.include_router(likes_router)
 app.include_router(content_router)
+app.include_router(web_router)
+app.include_router(api_router)
