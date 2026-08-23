@@ -1,5 +1,5 @@
 ---
-id: TEVAL-1
+id: autonomedia:TEVAL-M18S1
 type: evaluation
 title: "Test Evaluation Report for M18S1"
 milestone_id: M18

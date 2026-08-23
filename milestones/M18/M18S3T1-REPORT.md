@@ -1,6 +1,6 @@
 ---
 id: M18S3T1-REPORT
-type: report
+type: completion
 title: "M18S3 Test Generation Report"
 milestone_id: M18
 generated_at: 2026-08-22
