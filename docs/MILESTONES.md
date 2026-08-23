@@ -5,8 +5,9 @@ This directory tracks all project milestones, their states, and lifecycle manage
 
 ## Archived Milestones
 
-### M15 - Cross-Platform Expansion (Archived)
-### M16 - Automated Testing and Use-Case Generation Framework (Active)
+- ### M18 - Infrastructure Health Dashboard (In Progress → milestones/M18/)
+- ### M15 - Cross-Platform Expansion (Archived)
+- ### M16 - Automated Testing and Use-Case Generation Framework (Active)
 
 
 **Status:** Completed  
@@ -41,7 +42,42 @@ This directory tracks all project milestones, their states, and lifecycle manage
 **Documentation:**
 - Platform requirements: `docs/platform_requirements.md`
 - Deployment guide: `docs/deployment_guide.md`
-- Troubleshooting guide: `docs/troubleshooting_guide.md`
+- ---
+- ### M18 - Infrastructure Health Dashboard (In Progress → milestones/M18/)
+-
+- **Status:** In Progress (Test Implementation Phase)
+- **Spec:** M18S1
+- **Verification:** M18S1V
+- **Review:** M18S1R, M18S1_FINDINGS.md
+- **Active Tests:** test_health_endpoint.sh, test_health_dashboard_ui.sh, test_health_dashboard_binding.sh
+-
+- **Completed Requirements:**
+- - API endpoint handler created (`get_health_status()`)
+- - Router registered with `/api/health` route
+- - React dashboard component created (`health.jsx`)
+- - HTML dashboard template created (`health.html`)
+- - Basic server integration in `src/autonomedia/web/server.py`
+-
+- **Known Limitations:**
+- - Wrong entry point: Dashboard implemented in inactive `src/autonomedia/web/server.py` instead of `src/web/app.py`
+- - Architecture deviation: React component not integrated; hardcoded HTML template is being served
+- - Duplicate /health endpoints: Two conflicting endpoints exist with different behaviors
+- - Evaluation report discrepancy: Claims tests passed, actual execution shows failures
+- - Missing metadata: Milestone contract lacks required `id` field
+- - No completion report: M18S1C.md not generated
+-
+- **Critical Issues Identified:**
+- - FIND-001: Wrong entry point integration (src/web/app.py is active, server.py is not)
+- - FIND-002: Dashboard architecture deviation (React not integrated)
+- - FIND-003: Evaluation report inaccuracy (tests fail in current environment)
+- - FIND-004: Missing milestone contract ID
+- - FIND-006: Duplicate /health endpoints with conflicting behavior
+-
+- **Documentation:**
+- - Specification: `milestones/M18/M18S1.md`
+- - Verification: `milestones/M18/M18S1V.md`
+- - Review: `milestones/M18/M18S1_REVIEW.md`
+- - Findings: `milestones/M18/M18S1_FINDINGS.md`
 
 ---
 
@@ -228,15 +264,33 @@ This directory tracks all project milestones, their states, and lifecycle manage
 
 ---
 
-## Milestone Lifecycle
-
-1. **Proposal**: Milestone documented in `specs/` directory
-2. **Implementation**: Code and tests added per specification
-3. **Verification**: Verification document created in `verifications/` directory
-4. **Review**: Review document created in `reviews/` directory
-5. **Approval**: Milestone approved by team
-6. **Completion**: All requirements verified, code merged
-7. **Archival**: Moved to `milestones/archive/` with full documentation
+- ## Milestone Lifecycle
+-
+- 1. **Proposal**: Milestone documented in `specs/` directory
+- 2. **Implementation**: Code and tests added per specification
+- 3. **Verification**: Verification document created in `verifications/` directory
+- 4. **Review**: Review document created in `reviews/` directory
+- 5. **Approval**: Milestone approved by team
+- 6. **Completion**: All requirements verified, code merged
+- 7. **Archival**: Moved to `milestones/archive/` with full documentation
+-
+- ## Active Milestones
+-
+- ### M18 - Infrastructure Health Dashboard
+-
+- **Current Phase:** Review and Correction
+- **Previous Phase:** Test Implementation (M18S1TE.md)
+- **Next Phase:** Implementation Fix and Re-verification
+-
+- **Outstanding Work:**
+- 1. Integrate dashboard into `src/web/app.py`
+- 2. Fix evaluation report accuracy
+- 3. Add `id` field to M18.md
+- 4. Generate M18S1C.md completion report
+- 5. Resolve duplicate /health endpoints
+- 6. Merge React and HTML implementations
+- 7. Fix test set YAML parsing
+- 8. Re-run and verify tests
 
 ## Notes
 

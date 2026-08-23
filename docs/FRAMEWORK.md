@@ -441,7 +441,79 @@ Test suites
 ├── [test_m*.py files]       # Milestone-specific tests
 └── [test_*.py files]        # Module-specific tests
 ```
-
+- ---
+- # WEB APPLICATION ARCHITECTURE
+-
+- ### Entry Point
+-
+- Primary FastAPI application entry point: `src/web/app.py`
+-
+- This app serves the main Autonomedia web interface with the following domains:
+- - **Command Center:** Operational overview, triage, action queue
+- - **Content:** Idea backlogs, draft management
+- - **AI Review:** AI diff inspection and content regeneration
+- - **Platforms:** Platform-specific verification and status
+- - **Analytics:** Operational feedback and metrics
+-
+- ### Dashboard Implementation
+-
+- Health dashboard for infrastructure monitoring:
+- - **Location:** `src/autonomedia/web/ui/dashboard/health.jsx` (React component)
+- - **Template:** `src/autonomedia/web/templates/health.html` (fallback)
+- - **API Endpoint:** `GET /api/health` (requires implementation integration)
+- - **Integration:** Must be integrated into `src/web/app.py` router
+-
+- ### Routing Pattern
+-
+- All web routes follow this pattern:
+- 1. Domain extraction (per UX architecture)
+- 2. Single HTTP method per route (GET/POST only)
+- 3. Template-based rendering for HTML responses
+- 4. JSON responses for API endpoints
+-
+- ### React vs Templates
+-
+- **Preferred:** React components for complex, interactive UI
+- - Better state management
+- - Easier testing
+- - More maintainable
+-
+- **Fallback:** Jinja2 templates (current implementation)
+- - Faster to implement
+- - No build step required
+- - Good for simple pages
+-
+- ### Router Hierarchy
+-
+- ```
+- src/web/app.py (Main entry point)
+- ├── / (Root)
+- ├── /content (Content management)
+- ├── /platforms (Platform status)
+- ├── /rewrites (AI rewrite management)
+- ├── /registry (Registry management)
+- ├── /health (Health dashboard)
+- └── /api/* (API endpoints)
+-
+- src/autonomedia/web/api/* (API routers)
+- ├── comments.py
+- ├── content.py
+- └── likes.py
+- ```
+-
+- ### Integration Rules
+-
+- **NEW implementation MUST:**
+- - Integrate into `src/web/app.py` (NOT standalone server files)
+- - Use React components for dashboard UI (spec requires this)
+- - Register routes in app router
+- - Follow existing domain extraction pattern
+-
+- **DO NOT:**
+- - Create separate FastAPI apps without clear justification
+- - Implement routes in inactive server files
+- - Use hardcoded HTML when React component is available
+- - Duplicate functionality between files
 # DIRECTORY ROLES
 
 ## docs/

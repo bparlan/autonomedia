@@ -229,4 +229,46 @@ MVP successful when:
 * logs inspectable
 * rewrites platform-aware
 * randomized scheduling functional
-* human intervention minimal
+- # WEB INFRASTRUCTURE
+-
+- ## Dashboard Implementation
+-
+- Health dashboard provides real-time visibility into infrastructure status:
+-
+- - **Components Monitored:**
+-   - Database health
+-   - Runtime directory status
+-   - Test suite integrity
+-   - Source code availability
+- - **Access Method:**
+-   - URL: `/health` (dashboard page)
+-   - API: `GET /api/health` (status JSON)
+-   - Authentication: Per-project policy (no hardcoded credentials)
+- - **Response Format (API):**
+-   ```json
+-   {
+-     "database": "healthy" | "unhealthy",
+-     "runtime": "healthy" | "unhealthy",
+-     "tests": "healthy" | "unhealthy",
+-     "src": "healthy" | "unhealthy"
+-   }
+-   ```
+-
+- ## Web Application Structure
+-
+- The web application follows these principles:
+-
+- - **Frameworks:** FastAPI (backend), React (dashboard UI), Jinja2 (fallback templates)
+- - **Entry Point:** `src/web/app.py` (main FastAPI application)
+- - **Routing:** RESTful with single HTTP method per route
+- - **Templates:** `src/web/templates/` directory
+- - **Components:** `src/web/ui/` directory for React components
+-
+- ## Integration Requirements
+-
+- Web features must:
+- 1. Integrate into `src/web/app.py` (NOT standalone server files)
+- 2. Use React components for dashboard UI (spec requires this)
+- 3. Register routes in app router
+- 4. Follow existing domain extraction pattern
+- 5. Include tests covering happy path and error cases

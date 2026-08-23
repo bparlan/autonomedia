@@ -98,7 +98,55 @@ Platforms excluded due to unhealthy status or missing verification must be logge
 
 This ensures auditability for platforms silently removed from posting queues.
 
----
+- ---
+- # WEB DEVELOPMENT WORKFLOW
+-
+- ## Dashboard Implementation
+-
+- When implementing a new dashboard or monitoring feature:
+-
+- 1. **Design Phase:**
+-    - Determine if React component or template is appropriate
+-    - Prefer React for complex, interactive UI
+-    - Use templates for simple pages
+-
+- 2. **Implementation Phase:**
+-    - Create React component in `src/web/ui/`
+-    - Create template in `src/web/templates/` (if needed)
+-    - Implement API endpoint in `src/autonomedia/web/api/`
+-    - Integrate into `src/web/app.py` router
+-    - Register routes using FastAPI router pattern
+-
+- 3. **Testing Phase:**
+-    - Write tests for happy path
+-    - Write tests for error paths
+-    - Verify dashboard renders correctly
+-    - Verify API returns correct JSON
+-    - Test data binding
+-
+- 4. **Integration Phase:**
+-    - Ensure route is registered in main app
+-    - Verify endpoint is accessible
+-    - Test in both dev and production environments
+-    - Update documentation if needed
+-
+- ## Common Pitfalls
+-
+- ### Wrong Entry Point
+- **Problem:** Implementing routes in `src/autonomedia/web/server.py` instead of `src/web/app.py`
+- **Solution:** Always integrate into the main app (`src/web/app.py`)
+-
+- ### Architecture Deviation
+- **Problem:** Hardcoding HTML instead of using React component
+- **Solution:** Use React for dashboard UI; templates only as fallback
+-
+- ### Duplicate Routes
+- **Problem:** Creating duplicate `/health` or similar endpoints
+- **Solution:** Use a single entry point; rename if needed
+-
+- ### Missing Tests
+- **Problem:** Dashboard changes without corresponding tests
+- **Solution:** Always write tests before/after changes
 
 ## FAILURE MODE: SILENT STUB EXECUTION
 
