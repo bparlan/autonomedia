@@ -74,6 +74,46 @@ CREATE TABLE IF NOT EXISTS content (
 );
 ```
 
+---
+
+## ideas
+
+The `ideas` table stores the campaign-level data for long-term re-posting.
+
+```sql
+CREATE TABLE IF NOT EXISTS ideas (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    base_content TEXT NOT NULL,
+    referral_link TEXT,
+    tags JSONB DEFAULT '[]',
+    whitelist_contacts JSONB DEFAULT '[]',
+    style_presets JSONB DEFAULT '{}',
+    duration_type TEXT DEFAULT 'relative', -- 'relative' or 'fixed'
+    duration_value TEXT, -- e.g., '1 month'
+    frequency TEXT, -- e.g., 'every 3 days'
+    platforms JSONB DEFAULT '["mastodon"]',
+    start_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    end_at TIMESTAMP WITH TIME ZONE,
+    status TEXT DEFAULT 'active', -- 'active', 'paused', 'completed'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Relationship
+An `Idea` spawns multiple `Content` records. Each `Content` record generated from an `Idea` will store the `idea_id` in its `metadata` or a new `idea_id` column.
+
+---
+
+## Whitelist Contact Truth Registry
+
+The authoritative list of safe handles, hashtags, and links is stored in `src/autonomedia/content/mention_registry.json`.
+
+* **Validation Rule:** AI-generated rewrites must be parsed and verified against this registry before being marked as `ready_to_post`.
+* **Safety:** Prevents AI from hallucinating incorrect handles or links.
+
+
 ### Schema Notes
 * `content.status`: Determines UI visibility and processing flow.
   * `idea`: Draft state, visible in `/content` view.

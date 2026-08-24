@@ -50,14 +50,17 @@ The system should NOT become:
 
 ---
 
-# MVP GOALS
+# MVP GOALS: IDEA FEATURE (MILESTONE 0)
 
-## Phase 1
+Our initial MVP focuses on the "Idea" feature, enabling solo developers to define and automate content distribution.
 
-Reliable posting to:
+## Phase 1: Core Idea Scheduling & Mastodon Publishing
 
-1. Mastodon
-2. Bluesky
+*   **Goal:** Reliable posting of AI-rewritten "Ideas" to Mastodon.
+*   **Key Functionality:**
+    1.  User defines an "Idea" with content, schedule, AI styles, and target platform (Mastodon).
+    2.  System automatically generates unique content variants for each scheduled post using AI.
+    3.  Validated content is published to Mastodon on schedule.
 
 Requirements:
 
@@ -162,23 +165,68 @@ Reasoning:
 
 ---
 
+---
+
+# IDEA FEATURE (RE-POSTING & AI AUTOMATION)
+
+The "Idea" is the core entity for long-term content distribution. Unlike a single post, an Idea is a persistent campaign that generates multiple unique posts over time.
+
+## Core Concept
+* **Longevity:** User defines an Idea with a duration (e.g., 1 month).
+* **Diversity:** AI rewrites the Idea for each scheduled slot so no two posts are identical.
+* **Consistency:** Adheres to a predetermined "Whitelist Contact Truth Registry" for handles, hashtags, and links.
+
+## Data Fields
+| Field | Description |
+|-------|-------------|
+| Title | Internal name for the campaign. |
+| Base Content | The core message/facts to be shared. |
+| Referral Link | Canonical link to be included in posts. |
+| Tags | Hashtags or categories for tracking. |
+| Whitelist Contacts | Predetermined handles to be tagged/mentioned. |
+| Duration | Time period for the campaign (relative to start). |
+| Frequency | How often to post (e.g., every 3 days, once a week). |
+| Platform List | Target social networks (MVP: Mastodon). |
+| AI Style Presets | Instructions for AI tone (punchy, professional, etc.). |
+
+## Workflow
+1. **Creation:** User creates an Idea via the "Content" domain UI.
+2. **Scheduling:** The system computes the sequence of post dates based on duration and frequency.
+3. **Generation:** For each date, the AI Rewrite module generates a new variant based on "Base Content" and "Style Presets".
+4. **Validation:** Rewrites are checked against the Whitelist Registry for handle/link accuracy.
+5. **Posting:** The Platform Adapter (Mastodon) executes the post.
+6. **Analytics:** Performance is aggregated at the Idea level (total reach, clicks across all variants).
+
+
 # AI REWRITE STRATEGY
 
-AI rewrites are stateless.
+AI rewrites are stateless, ensuring content freshness and adaptability. Each posting event dynamically generates a unique content variant.
 
-Every posting event:
+## Workflow for Each Scheduled Post:
 
-1. fetch canonical content
-2. generate platform-specific rewrite
-3. publish
-4. discard generated variant
-
+1.  **Fetch Idea Context:** Retrieve the `Idea` record, including `Base Content`, `AI Style Presets`, `Referral Link`, `Tags`, and `Whitelist Contacts`.
+2.  **Generate Platform-Specific Rewrite:** Invoke the AI Rewrite module to create a new content variant, adhering to `AI Style Presets` and platform constraints.
+3.  **Validate Content:** Verify the rewritten content against the `Whitelist Contact Truth Registry` for handles, hashtags, and referral links.
+4.  **Publish:** Post the validated, rewritten content to the designated platform (e.g., Mastodon).
+5.  **Discard Variant:** The ephemeral generated variant is discarded post-publication.
 Benefits:
 
 * infinite freshness
 * smaller database
 * easier maintenance
 * dynamic adaptation
+
+---
+
+
+---
+
+## Whitelist Contact Truth Registry
+
+The authoritative list of safe handles, hashtags, and links is stored in `src/autonomedia/content/mention_registry.json`.
+
+* **Validation Rule:** AI-generated rewrites must be parsed and verified against this registry before being marked as `ready_to_post`.
+* **Safety:** Prevents AI from hallucinating incorrect handles or links.
 
 ---
 
@@ -218,17 +266,16 @@ Pi does NOT:
 
 ---
 
-# SUCCESS CRITERIA
+# SUCCESS CRITERIA (MILESTONE 0 - MVP)
 
-MVP successful when:
+The MVP is successful when a solo developer can reliably:
 
-* Mastodon posting stable
-* Bluesky posting stable
-* sessions persist reliably
-* failures observable
-* logs inspectable
-* rewrites platform-aware
-* randomized scheduling functional
+*   Create and manage "Ideas" through the UI.
+*   See AI-rewritten content variants published automatically to Mastodon.
+*   Observe scheduled posts occurring at the defined frequency.
+*   Confirm that generated content adheres to specified `AI Style Presets`.
+*   Verify that `Whitelist Contacts` and `Referral Links` are correctly included in posts.
+*   Inspect logs to understand the publishing workflow and identify any failures.
 - # WEB INFRASTRUCTURE
 -
 - ## Dashboard Implementation

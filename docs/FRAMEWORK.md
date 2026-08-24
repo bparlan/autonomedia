@@ -1,4 +1,22 @@
-# AUTONOMEDIA — FRAMEWORK.md
+# AUTONOMEDIA - FRAMEWORK.md
+
+## System Architecture Overview
+
+Autonomedia is designed as a local-first, modular autonomous publishing runtime, empowering solo creators to manage and distribute their "Ideas" across social platforms. It prioritizes user control, inspectability, and intelligent automation.
+
+### Core Architectural Principles
+1.  **Local-First Autonomous Runtime:** Operates on the user's machine for direct control and offline capability.
+2.  **Modular & Extensible:** Components (schedulers, AI, platform adapters) are independently replaceable and extendable.
+3.  **Browser-First Interaction:** Employs Playwright for human-like web interactions, ensuring platform independence.
+4.  **Async-Native:** Built for non-blocking I/O and efficient task handling, supporting scalability.
+5.  **Deterministic Outputs:** Aims for predictable results in content generation and scheduling.
+
+### System Map Links
+
+-   **Data Flow Diagram:** [Data Flow](xref:docs/system_map_data_flow.md)
+-   **UI Flow:** [Content Creator Journey](xref:docs/system_map_ui_flow.md)
+-   **Interaction Matrix:** [Component Interactions](xref:docs/system_map_interaction_matrix.md)
+
 
 # TECHNOLOGY STACK
 
@@ -13,12 +31,12 @@ Reasoning:
 - good tooling
 - compatible with pi workflows
 
----
 
-## Platform Awareness
+## Platform Integration Strategy
 
-* **Character Limits**: Resolved in M15 via `get_platform_constraints()` API and `adapt_content_for_platform()` utilities for platform-specific limits (LinkedIn: 300/3000, X: 280, Mastodon: 500).
-* **Content Adaptation**: M15 implemented platform-specific content adaptation with tone guidelines (professional for LinkedIn, punchy for X, community-focused for Mastodon).
+-   **Modular Adapters:** Each social platform is integrated via a dedicated `Platform Adapter` (e.g., MastodonTaskHandler) in `src/autonomedia/platforms/`. These adapters encapsulate platform-specific logic, API interactions, and authentication.
+-   **Content Adaptation:** As part of Milestone 1 (Multi-Platform Expansion), content will be dynamically adapted for platform-specific constraints (character limits, media types) and tone guidelines (professional for LinkedIn, punchy for X, community-focused for Mastodon). This ensures optimal presentation across diverse networks.
+
 
 # PACKAGE MANAGEMENT
 
@@ -74,25 +92,19 @@ playwright install chromium
 
 # TEMPLATE EDGE CASE HANDLING
 
-## Verification Status Synchronization
+## Content & Idea Verification Status Synchronization
 
-* Platforms may exist in `prepared_content` without corresponding entries in `verification_status`.
-* Templates must handle missing verification statuses gracefully—render unverified badges as default.
-* Never assume verification status completeness; always check for key existence.
+-   The system generates and manages content variants for `Ideas`. These variants require verification (e.g., against the Whitelist Contact Truth Registry) before posting.
+-   Templates responsible for displaying content status MUST gracefully handle missing or pending verification statuses for `Ideas` and their generated posts.
+-   Never assume verification status completeness; always check for key existence (e.g., `idea.posts.verification_status`).
 
-### Concurrent Approval Safety
+### Concurrent Scheduling & Approval Safety
 
-When checking approval status concurrently, use row-level locking to prevent race conditions. Example pattern:
+When processing or approving `Idea` posts concurrently, use robust mechanisms (like database-level row locking) to prevent race conditions. Two simultaneous requests could both pass a status check before either writes, leading to duplicate posting attempts or inconsistent schedules. Always wrap concurrent status checks and updates in transaction isolation or use `FOR UPDATE` for PostgreSQL-level locking.
 
-```sql
-SELECT * FROM verifications WHERE content_id = $1 FOR UPDATE;
-```
+### Optimized Status Building
 
-Two simultaneous requests could both pass a status check before either writes, leading to duplicate posting attempts. Always wrap concurrent status checks in transaction isolation or use `FOR UPDATE` for PostgreSQL-level locking.
-
-### Platform Filtering Optimization
-
-Platform filtering and verification status building should be consolidated into a single-pass logic flow. Avoid double-filtering prepared_data and verification_status separately, as this creates maintenance burden and potential for divergence. Build verification status inline during platform iteration.
+Building verification and scheduling statuses for `Ideas` and their associated posts should be consolidated into a single-pass logic flow. Avoid separate filtering and status checks, as this increases maintenance burden and potential for divergence. Integrate status building inline during `Idea` and post iteration.
 
 # ASYNC DESIGN EXPLANATION
 
@@ -192,16 +204,17 @@ Avoid: CSS chains, nth-child, fragile DOM traversal.
 
 # DATABASE
 
-Use PostgreSQL.
+Autonomedia supports both SQLite for local development and PostgreSQL for production deployments.
 
-Installed locally.
+-   **Local Development:** SQLite (via `src/autonomedia/database/client.py`) provides a lightweight, file-based database ideal for solo developer workflows and rapid prototyping.
+-   **Production:** PostgreSQL is the recommended database for production environments due to its robustness, scalability, and advanced features.
 
-Postgres should become source-of-truth immediately.
+Postgres should become source-of-truth immediately for multi-user/scaled deployments.
 
 Google Sheets only acts as ingestion source.
 
----
 For detailed schema definitions, table structures, and ingestion strategies, see [DATA.md](./DATA.md).
+# LOCAL PROCESS PHILOSOPHY
 
 # LOCAL PROCESS PHILOSOPHY
 
@@ -256,17 +269,14 @@ Never share browser state across platforms.
 
 # FUTURE STACK EXPANSIONS
 
-Planned future capabilities:
+Planned future capabilities, aligned with the phased roadmap:
 
-* newsletter publishing
-* blog publishing
-* semantic memory
-* client account isolation
-* analytics intelligence
-* knowledge retrieval
+-   **Milestone 1 (Multi-Platform Expansion):** Enhanced client account isolation, multi-platform support.
+-   **Milestone 2 (Advanced AI & Content Control):** Semantic memory, analytics intelligence, advanced knowledge retrieval for AI.
+-   **Milestone 3 (Analytics, Monitoring & Refinement):** Comprehensive analytics intelligence and advanced monitoring capabilities.
+-   **Milestone 4 (Extensibility & Future Growth):** Plugin architecture for new capabilities and agent-to-agent collaboration.
 
-Current architecture must preserve compatibility.
-
+Current architecture must preserve compatibility with these future developments.
 ---
 
 # PIPELINE INTEGRITY RULE: EXPLICIT DISPATCH
@@ -277,21 +287,76 @@ Async workers in a modular pipeline MUST explicitly invoke downstream handlers. 
 
 # UX ARCHITECTURE
 
-We build an "autonomous media operations system", not a basic web app.
+We build an "autonomous media operations system" with a user-centric design, not a basic web app. The UI provides a clear, actionable overview of `Idea` campaigns and system health.
+
+## UI Framework Strategy
+
+Autonomedia employs a hybrid UI framework strategy:
+
+-   **FastAPI & Jinja2:** For simpler, server-rendered pages and foundational UI elements.
+-   **React (for Dashboards):** For complex, interactive dashboards and dynamic data visualization (e.g., advanced analytics, real-time status updates, intricate `Idea` management interfaces).
 
 Constraints:
-* No framework soup (no React/Vue). Use HTML, Jinja2, HTMX, and Tailwind.
-* "Fewer clicks to resolve work" is better than "Fewer pages".
-* Utilize "Phase 3 Domain Extraction".
+-   Prioritize "Fewer clicks to resolve work" over "Fewer pages."
+-   Utilize "Phase 3 Domain Extraction" for logical grouping of functionality.
 
 Domains:
-* **Command Center:** Operational overview, triage, action queue (pending approvals, failures).
-* **Content:** Dedicated backlog and idea management.
-* **AI Review:** First-class subsystem for inspecting AI diffs, regenerating, and approving output.
-* **Platforms:** Dedicated integration health (session cookies, auth limits).
-* **Analytics:** Dedicated feedback layer.
----
+-   **Command Center:** Operational overview, triage, action queue (pending approvals, failures related to `Ideas`).
+-   **Content:** Dedicated backlog and `Idea` management, creation, and editing.
+-   **AI Review:** First-class subsystem for inspecting AI-generated diffs, regenerating variants, and approving `Idea` output.
+-   **Platforms:** Dedicated integration health (session cookies, auth limits for platform adapters).
+-   **Analytics:** Dedicated feedback layer for `Idea` performance and system health.
 
+
+# PROJECT LAYOUT
+
+```
+autonomedia/
+├── docs/                    # Canonical documentation
+│   ├── CHANGELOG.md        # Version history
+│   ├── DATA.md             # DB schema & storage
+│   ├── FRAMEWORK.md        # Design principles & stack rules
+│   ├── MILESTONES.md       # Milestone objectives & history
+│   ├── PLAYBOOK.md         # Operator guide & failure modes
+│   ├── ROADMAP.md          # Vision & strategic alignment
+│   ├── SPEC.md             # Functional requirements
+│   ├── system_map_data_flow.md   # Data flow diagram
+│   ├── system_map_interaction_matrix.md   # Component interaction matrix
+│   ├── system_map_inventory.md   # UI template & route inventory
+│   └── system_map_ui_flow.md   # Content Creator UI flow
+├── runtime/                 # Ephemeral state (browser profiles, sessions, temporary files)
+│   ├── browser_profiles/
+│   ├── sessions/
+│   └── tmp/
+├── scripts/                 # Utility scripts
+│   ├── checks/             # Diagnostics & platform verifications
+│   └── db/                 # Migrations & schema updates
+├── src/                     # Application code
+│   ├── autonomedia/
+│   │   ├── ai/             # AI-related modules
+│   │   │   ├── rewriting/  # Content rewriting (base, gemini.py)
+│   │   │   └── ...
+│   │   ├── api/            # API endpoints (health.py, router.py)
+│   │   ├── core/           # Core business logic (scheduler.py, posting_routine.py, worker.py, logger.py, security.py, error_resolver.py, poller.py, verification.py, config/, db/, observability/, analytics/)
+│   │   │   └── scheduler.py # Idea scheduling engine
+│   │   ├── content/        # Content-related modules
+│   │   │   ├── ingestion/  # Content ingestor
+│   │   │   └── mention_registry.json # Whitelist Contact Truth Registry
+│   │   ├── database/       # Database client and schema (client.py, schema.py)
+│   │   ├── platforms/      # Platform-specific adapters (mastodon/, linkedin/, x/, ...)
+│   │   │   └── mastodon/   # Mastodon platform handler (task_handler.py, post_handler.py)
+│   │   └── web/            # Web application components
+│   │       ├── main.py     # Main FastAPI app entry point
+│   │       ├── router.py   # Web router
+│   │       ├── models.py   # Pydantic/SQLAlchemy models
+│   │       ├── templates/  # Jinja2 templates (health.html, dashboard.html, etc.)
+│   │       └── ui/         # React components (e.g., health.jsx)
+│   └── ...
+├── storage/                 # Persistent outputs (logs, screenshots, exports)
+├── tests/                   # Unit, integration, and e2e tests
+│   └── M0/                 # Tests for Milestone 0
+└── pyproject.toml           # Project metadata and dependencies (uv)
+```
 # PROJECT LAYOUT
 
 ```

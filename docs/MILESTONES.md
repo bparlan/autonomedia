@@ -1,9 +1,111 @@
-# Milestones
+# AUTONOMEDIA - MILESTONES.md
 
-This directory tracks all project milestones, their states, and lifecycle management.
+This document tracks all project milestones, their states, and lifecycle management, aligned with the strategic roadmap.
 
+## Milestone Lifecycle
+
+The Spec-Driven Development (SDD) pipeline follows this exact sequence:
+
+1.  **Milestone Creation**: Milestone documented in `milestones/M{X}/M{X}.md`
+2.  **Specification Generation**: Specification created in `milestones/M{X}/M{X}S{Y}.md`
+3.  **Verification Generation**: Verification protocol created in `milestones/M{X}/M{X}S{Y}V.md`
+4.  **Test Generation**: Test scripts created in `tests/M{X}/` and `milestones/M{X}/M{X}S{Y}T{Z}.md`
+5.  **Test Evaluation**: Pre-implementation baseline validated in `milestones/M{X}/M{X}S{Y}TE.md` (must show RED state)
+6.  **Specification Approval**: User approval via `approve-spec` (marked in M{X}S{Y}.md frontmatter)
+7.  **Implementation**: Code implemented per specification (`milestones/M{X}/M{X}S{Y}C.md`)
+8.  **Implementation Evaluation**: Post-implementation validation (`milestones/M{X}/M{X}S{Y}E.md`)
+9.  **Implementation Review**: Review completed (`milestones/M{X}/M{X}S{Y}R.md`)
+10. **Milestone Closure**: Loop-closure validated and closure artifact created (`milestones/M{X}/M{X}CLOSE-{N}.md`)
+11. **Documentation Sync**: Review changes integrated into roadmap, changelogs, and indices
+12. **Archival** (Optional): Milestone documents moved to `milestones/archive/` with full history
+
+### Fix Paths (when evaluation fails):
+- **Hotfix Issue**: For MINOR_IMPLEMENTATION_DEFECT → loops back to evaluation
+- **Investigate Issue**: For COMPLEX_OR_UNCLEAR_ISSUE → loops back to evaluation
+- Both paths MUST return through evaluation before proceeding to review
+
+## Active & Upcoming Milestones
+
+### Milestone 0: Foundation & Core Idea Scheduling (MVP)
+
+*   **Goal:** Enable a solo developer to define an "Idea" and have it automatically rewritten and published on schedule to a single platform (Mastodon).
+*   **Status:** Completed (2026-08-24)
+*   **Key Deliverables:**
+    *   Idea Data Model implemented in `src/autonomedia/database/schema.py` and CRUD operations in `src/autonomedia/database/client.py`.
+    *   Basic Scheduling Engine for custom intervals in `src/autonomedia/core/scheduler.py`.
+    *   AI Rewrite Module (base and Gemini-specific) in `src/autonomedia/ai/rewriting/`.
+    *   Mastodon Posting Worker in `src/autonomedia/platforms/mastodon/`.
+    *   System Map Documentation: Data Flow, UI Flow (Content Creator Journey), Interaction Matrix (`docs/system_map_data_flow.md`, `docs/system_map_ui_flow.md`, `docs/system_map_interaction_matrix.md`).
+    *   Release Report summarizing implementation and open issues (`docs/system_map_release_report.md`).
+*   **Related Docs:** `docs/SPEC.md`, `docs/FRAMEWORK.md`, `docs/PLAYBOOK.md`, `docs/ROADMAP.md` (updated).
+
+### Milestone 1: Multi-Platform Expansion & Authentication
+
+*   **Goal:** Extend Idea publishing to multiple platforms and handle authentication securely.
+*   **Status:** Upcoming
+*   **Key Deliverables:**
+    *   Platform Abstraction Layer refinements.
+    *   Secure OAuth 2.0 implementation for LinkedIn and X.
+    *   LinkedIn and X Platform Handlers.
+    *   UI integration for multi-platform selection.
+
+### Milestone 2: Advanced AI & Content Control
+
+*   **Goal:** Enhance AI capabilities for more nuanced content generation and user control.
+*   **Status:** Upcoming
+*   **Key Deliverables:**
+    *   Advanced AI Style Presets and fine-tuning options.
+    *   Robust Content Validation Engine.
+    *   UI for managing and customizing the Whitelist Registry.
+
+### Milestone 3: Analytics, Monitoring & Refinement
+
+*   **Goal:** Provide deep insights into Idea performance and improve system reliability.
+*   **Status:** Upcoming
+*   **Key Deliverables:**
+    *   Engagement Data Ingestion.
+    *   Comprehensive Analytics Dashboard.
+    *   Enhanced System Health Monitoring.
+    *   Advanced Error Handling and Retry Mechanisms.
+
+### Milestone 4: Extensibility & Future Growth
+
+*   **Goal:** Prepare the system for future expansion and integration of new capabilities.
+*   **Status:** Upcoming
+*   **Key Deliverables:**
+    *   Plugin Architecture for new AI models and platform adapters.
+    *   Refined API for external integrations.
+    *   Initial User Management features.
+
+### M18 - Infrastructure Health Dashboard
+
+*   **Current Phase:** Review and Correction (Deferred)
+*   **Status:** In Progress (Needs significant refactoring to align with current architecture)
+*   **Outstanding Work (Re-prioritized):**
+    *   Integrate dashboard into `src/autonomedia/web/app.py` (Correct entry point).
+    *   Merge React and HTML implementations (Align with frontend strategy).
+    *   Resolve duplicate `/health` endpoints.
+    *   Address evaluation report inaccuracy and missing metadata.
+*   **Note:** Resolution of M18 will be re-evaluated after the completion of core MVP-related milestones. Its current state does not block the "Idea" feature development.
 
 ## Archived Milestones
+
+*   **M15 - Cross-Platform Expansion (Archived):** Concepts from this milestone have been integrated into Milestone 1 of the new roadmap.
+*   **M16 - Automated Testing and Use-Case Generation Framework (Active -> Archived):** This milestone's goals are now integrated into the standard SDD verification process across all new milestones.
+*   **M14 - Daily Posting Routine with Randomized Intervals (Archived):** Functionality superseded by the new "Idea" scheduling engine.
+*   **M13 - Ready to Publish Platform Visibility (Archived):** Replaced by integrated UI/analytics within the new milestone structure.
+*   **M12 - Granular Platform Verification (Archived):** Concepts are now part of the Content Validation Engine (Milestone 2).
+*   **M11 - Observability & Self-Healing (Archived):** Core concepts integrated into Milestone 3 (Analytics, Monitoring & Refinement).
+*   **M10 - Autonomous Runtime (Archived):** Foundational work on async architecture and browser profiles is now an inherent part of the system's runtime.
+*   **M7 - Moderation & Guardrails (Archived):** Content validation aspects are now part of Milestone 2 (Advanced AI & Content Control).
+*   **M6 - AI & Assembly Line (Archived):** AI rewrite and posting worker concepts integrated into Milestone 0 (MVP).
+*   **M5 - Content Generation (Archived):** Superseded by the "Idea" feature's content generation.
+*   **M4 - Browser Setup (Archived):** Fundamental browser setup now part of system infrastructure.
+*   **M3 - Initial Deployment (Archived):** Project deployment is now part of general operations.
+*   **M2 - Schema Design (Archived):** Database schema design is now an ongoing task within feature development.
+*   **M1 - Foundation (Archived):** Project initialization is now part of standard setup.
+
+*All milestone files, including those mentioned above, are preserved in `milestones/archive/` with complete history.*
 
 - ### M18 - Infrastructure Health Dashboard (In Progress → milestones/M18/)
 - ### M15 - Cross-Platform Expansion (Archived)
