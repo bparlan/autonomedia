@@ -15,43 +15,49 @@ Autonomedia aims to be the premier local-first autonomous publishing runtime, em
 ## Phased Evolution
 
 ### Milestone 0: Foundation & Core Idea Scheduling (MVP)
-
-*   **Goal:** Enable a solo developer to define an "Idea" and have it automatically rewritten and published on schedule to a single platform (Mastodon).
-*   **MVP Use Case:** "I as a solo developer - want to give my "Ideas" and see them getting rewritten and published on schedule."
-*   **Key Components:** Idea Data Model, Basic Scheduling Engine, Placeholder AI Rewrite, Mastodon Posting Worker, Basic UI for Idea Management.
-*   **Status:** Implemented (Refer to completed tasks in session history).
+* **Goal:** Enable a solo developer to define an "Idea" and have it automatically rewritten and published on schedule to a single platform (Mastodon).
+* **Status:** Completed
 
 ### Milestone 1: Multi-Platform Expansion & Authentication
-
-*   **Goal:** Extend publishing capabilities to other platforms and handle authentication securely.
-*   **Key Components:** Platform Abstraction Layer, Authentication Module (OAuth), Additional Platform Handlers (LinkedIn, X), UI Enhancements for platform selection.
-*   **Status:** To Be Implemented.
+* **Goal:** Extend publishing capabilities to other platforms (LinkedIn, X, Mastodon) and handle secure platform authentication.
+* **Status:** Completed (v0.8.0 / M15)
 
 ### Milestone 2: Advanced AI & Content Control
-
-*   **Goal:** Enhance AI capabilities for more nuanced content generation and user control.
-*   **Key Components:** Advanced AI Style Presets, Content Validation Engine, Whitelist Registry Integration.
-*   **Status:** To Be Implemented.
+* **Goal:** Enhance AI capabilities for content generation, rewriting presets, and content validation.
+* **Status:** Completed / Stabilized
 
 ### Milestone 3: Analytics, Monitoring & Refinement
+* **Goal:** Provide insights into content performance, system health monitoring, and error handling.
+* **Status:** Completed / Stabilized
 
-*   **Goal:** Provide users with insights into Idea performance and improve system reliability.
-*   **Key Components:** Engagement Data Ingestion, Analytics Dashboard, Enhanced System Health Monitoring, Robust Error Handling.
-*   **Status:** To Be Implemented.
+### Milestone 4: Stabilization, Registry Cleanup & Integration
+* **Goal:** Normalize project structure, enforce 3-layer registry patterns, and unify entry points.
+* **Status:** Active
 
-### Milestone 4: Extensibility & Future Growth
+## Long-Term Backlog
 
-*   **Goal:** Prepare the system for future expansion and integration of new capabilities.
-*   **Key Components:** Plugin Architecture, API Enhancements, User Management (for multi-user scenarios).
-*   **Status:** To Be Implemented.
+The following epics represent future growth areas and are currently **[Speculative / Pending Architectural Evaluation]**:
 
-## Completed Milestones Overview
+### Epic: Multi-Tenant Account Isolation
+* **Description:** Add support for multiple user profiles, isolated credential stores, and per-tenant platform tokens.
+* **Status:** Backlog [Speculative / Pending Architectural Evaluation]
 
-*   **Foundation & Core Idea Scheduling (MVP):** Core "Idea" feature implemented, enabling scheduling and basic AI rewriting for Mastodon posting. Documentation artifacts (system map, release report) generated.
-*   **System Map Documentation:** Comprehensive system architecture documentation created, including data flow, UI journey, and interaction matrix.
+### Epic: Agent-to-Agent (A2A) Collaboration Protocol
+* **Description:** Enable inter-agent message passing and workflow delegation between specialized agent workers.
+* **Status:** Backlog [Speculative / Pending Architectural Evaluation]
 
-## Future Considerations
+### Epic: Extensible Plugin Architecture
+* **Description:** Expose standard extension points for 3rd-party platform handlers, AI rewriting engines, and custom analytics processors.
+* **Status:** Backlog [Speculative / Pending Architectural Evaluation]
 
-- **Agent Collaboration:** Exploring agent-to-agent communication for complex workflows.
-- **TTS & STT:** Integration of Text-to-Speech and Speech-to-Text for voice interaction.
-- **Social Awareness:** Enhancing the system's ability to detect trends and inject relevant topics.
+### Epic: Multi-User Role Management (RBAC)
+* **Description:** Introduce user identity, session management, and granular permission roles (Creator, Reviewer, Admin).
+* **Status:** Backlog [Speculative / Pending Architectural Evaluation]
+
+### Epic: Voice & Multi-Modal Processing (TTS / STT)
+* **Description:** Integrate local speech-to-text for idea ingestion and text-to-speech for generating audio posts.
+* **Status:** Backlog [Speculative / Pending Architectural Evaluation]
+
+### Epic: Social Trend Awareness & Topic Injection
+* **Description:** Monitor social platforms for real-time trending topics and inject contextual prompts into the idea planner.
+* **Status:** Backlog [Speculative / Pending Architectural Evaluation]

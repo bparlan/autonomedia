@@ -40,6 +40,25 @@ Future roadmap includes:
 
 # Changelog
 
+## [0.8.1] — 2026-08-24
+
+### Added
+- Repository normalization via `bootstrap-project` skill:
+  - `.agent/guidance/` — Python stack-specific agent guardrails
+  - `docs/templates/` — documentation template directory
+  - `.pre-commit-config.yaml` enhanced with `ruff` and `mypy` hooks (was only sensitive-file check)
+- `.omp/config.yml` — canonical project configuration (project_id, mode, tooling, dev commands)
+- `docs/EXPERIENCES.md` — meta-learning ledger for framework friction and skill updates
+- `docs/DOCUMENTATION_GAP_ANALYSIS.md` — gap analysis against AEF canonical docs
+
+### Fixed
+- `README.md`: corrected broken doc references (`RUNTIME.md`, `STRUCTURE.md` → `docs/DATA.md`, `docs/ROADMAP.md`)
+- `AGENTS.md`: aligned architecture map and development protocol with canonical AEF conventions
+
+### Removed
+- Stale `.bak` files: `docs/FRAMEWORK.md.bak`, `docs/FRAMEWORK.md.bak2`, `src/autonomedia/core/platform/__init__.py.bak[23]`, `tests/integration/health_endpoint_test.py.bak`
+- Duplicate `.gitignore` entries for `runtime/`, `browser_data/`, `artifacts/`, `storage/`
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

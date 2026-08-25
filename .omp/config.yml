@@ -1,0 +1,43 @@
+project_id: "autonomedia"
+project_slug: "autonomedia"
+mode: "application"
+
+# Canonical artifact system configuration
+artifacts:
+  docs:
+    - "README.md"
+    - "AGENTS.md"
+    - "docs/SPEC.md"
+    - "docs/FRAMEWORK.md"
+    - "docs/PLAYBOOK.md"
+    - "docs/ROADMAP.md"
+    - "docs/DATA.md"
+    - "docs/MILESTONES.md"
+    - "docs/EXPERIENCES.md"
+    - "docs/CHANGELOG.md"
+  milestones:
+    archive: "milestones/archive/"
+    active: "milestones/"
+
+# Tooling stack configuration
+tooling:
+  environment_manager: "uv"
+  linter_formatter: "ruff"
+  pre_commit: "pre-commit"
+  type_checker: "mypy"
+
+# Development mode configuration
+development:
+  test_command: "uv run pytest"
+  lint_command: "uv run ruff check"
+  typecheck_command: "uv run mypy"
+  format_command: "uv run ruff format"
+
+# Project metadata
+metadata:
+  name: "Autonomedia"
+  description: "Autonomous publishing runtime"
+  version: "0.1.0"
+  language: "python"
+  python_version: "3.12"
+  repository_type: "application"

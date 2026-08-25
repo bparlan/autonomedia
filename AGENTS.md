@@ -74,7 +74,7 @@ Local-first autonomous publishing runtime. Deterministic. Modular. Browser-first
 ### Session Hygiene
 
 - `git status` must be clean before starting any task. Dirty tree from a
-  prior session → stop, report, do not layer new edits on top.
+  prior session → stop, do not layer new edits on top.
 - One task = one concern. If a task reveals a second unrelated issue
   (e.g. fixing an import breaks on a missing dependency), stop and report
   both as separate items rather than fixing the second inline.
@@ -118,3 +118,4 @@ Local-first autonomous publishing runtime. Deterministic. Modular. Browser-first
 
 - Prefer `/commit --dry-run` to review proposed atomic splits before applying. Never invoke `/commit --push` without explicit instruction.
 - Never call `git commit` directly via bash.
+EOF

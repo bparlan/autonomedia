@@ -39,13 +39,6 @@ LOG.old
 .env
 .env.*
 
-# Runtime execution state
-runtime/
-browser_data/
-artifacts/
-storage/
-screenshots/
-
 # Chromium / Playwright / automation profiles
 **/profiles/
 **/sessions/
@@ -57,4 +50,3 @@ screenshots/
 # OS / noise
 .DS_Store
 *.bak
-*.bak/
