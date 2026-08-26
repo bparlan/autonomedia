@@ -178,3 +178,123 @@ If the review fails, the agent must abide by these rules when applying fixes:
 3. **Iron Law of Debugging:** If tests are failing, diagnose the root cause *before* changing code. Form a hypothesis, and test one hypothesis at a time.
 
 4. **Run Tests After Every Fix:** You must run `just test` and verify the `exitCode` before deciding a revision is complete.
+
+# M18S5 Implementation Procedures
+
+## Overview
+This document outlines the procedures and workflows implemented during the M18S5 milestone for Infrastructure Health Dashboard verification protocol optimization.
+
+## Implementation Steps
+
+### 1. Pre-implementation
+- Validate specification requirements (SPEC-M18S5)
+- Execute test evaluation (M18S5TE.md)
+- Approve specification (user approval stamp)
+
+### 2. Implementation
+- Apply specification to codebase via implement-specification
+- Execute evaluation-implementation (M18S5E.md)
+- Perform review-implementation (M18S5R.md)
+- Complete loop-closure validation (M18S5CLOSE-1.md)
+
+### 3. Post-implementation
+- Run documentation sync (sync-documentation)
+- Archive completed artifacts (close-milestone)
+- Update project documentation (sync-documentation)
+
+## M18S5 Specific Procedures
+
+### Browser-based React Component Validation
+- Execute Playwright E2E tests: `python3 -m playwright test tests/M18/test_health_dashboard_binding_e2e.py`
+- Validate React component integration in browser environment
+- Ensure proper error handling and state management
+
+### Environment Configuration
+- Set BASE_URL environment variable for all test scripts
+- Configure Playwright browser automation
+- Verify React component server integration
+
+### Quality Gates
+- Metadata validation (validate_metadata.py)
+- Lint evaluation gate (lint-evaluation-gate.py)
+- Artifact completeness verification
+- Loop-closure validation
+
+## Documentation Sync Workflow
+
+### Pre-ingestion Requirements
+- All milestone artifacts must be present (SPEC, VER, TSET, TE, C, E, R, CLOSE)
+- User approval must be stamped in specification
+- Loop-closure validation must pass
+
+### Post-ingestion Process
+1. Scan all M18S5 artifacts
+2. Compare against SPEC.md, DATA.md, PLAYBOOK.md, CHANGELOG.md
+3. Update canonical documentation
+4. Regenerate architecture diagrams (MANDATORY)
+5. Present all changes for user approval
+
+### Diagram Regeneration
+- Execute diagrammer skill to rebuild docs/diagrams/system_snapshot.mmd
+- Validate diagram against current codebase structure
+- Present diagram changes for approval
+
+## M18S5 Artifact Lineage
+
+```
+M18S5.md (SPEC) → M18S5V.md (VER) → M18S5T1.md (TSET)
+     ↓                                  ↓
+M18S5E.md (EVAL) ←─── M18S5TE.md (TE) ←─── M18S5C.md (COMPLETION)
+     ↓
+M18S5R.md (REVIEW) ←─── M18S5CLOSE-1.md (CLOSURE)
+```
+
+## Next Steps
+
+1. Execute Playwright E2E tests for React component validation
+2. Verify environment variable configuration
+3. Update documentation with M18S5-specific procedures
+4. Ensure all quality gates pass
+5. Archive completed milestone artifacts
+
+## Verification Commands
+
+```bash
+# Test React component validation via browser automation
+python3 -m playwright test tests/M18/test_health_dashboard_binding_e2e.py
+
+# Validate API endpoint with environment variable
+BASE_URL="http://localhost:8000" bash tests/M18/test_health_endpoint.sh
+
+# Verify dashboard accessibility
+BASE_URL="http://localhost:8000" bash tests/M18/test_health_dashboard_ui.sh
+
+# Validate healthcheck utility
+python3 tests/M18/test_healthcheck_utility.py
+
+# Verify implementation evaluation
+python3 ~/devcode/aef/agent/bin/validate_metadata.py milestones/M18/M18S5.md milestones/M18/M18S5V.md milestones/M18/M18S5E.md milestones/M18/M18S5C.md
+```
+
+## Archive
+
+- `docs/skills.md` - Updated with sync-documentation skill
+- `docs/PLAYBOOK.md` - Added M18S5 implementation procedures
+- `docs/diagrams/system_snapshot.mmd` - Regenerated architecture overview
+
+
+## M18S5 Implementation Procedures
+
+
+### Implementation Overview
+
+The M18S5 milestone implemented Infrastructure Health Dashboard verification protocol optimization to eliminate technical debt and adapt to client-side React architecture.
+
+### Key Deliverables
+
+- Browser-based React component validation via Playwright
+- Environment variable BASE_URL usage in all test scripts
+- Zero hardcoded localhost:8000 references in test files
+- Generated verification protocol M18S5V.md
+- Only allowlist files modified, denylist files remain untouched
+- Browser-based React component validation replaces static HTML pattern matching

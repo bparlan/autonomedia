@@ -1,3 +1,26 @@
+## [0.8.2] - 2026-08-26
+
+### Added
+- M18S5: Infrastructure Health Dashboard Verification Protocol Optimization
+  - Browser-based React component validation via Playwright E2E testing
+  - Environment variable BASE_URL usage in all test scripts
+  - Zero hardcoded localhost:8000 references in test files
+  - Generated verification protocol M18S5V.md
+  - Only allowlist files modified, denylist files remain untouched
+  - Browser-based React component validation replaces static HTML pattern matching
+  - Infrastructure Health Dashboard with React component integration
+  - Client-side React rendering via Babel/CDN
+
+### Fixed
+- Test implementation contract mismatch resolved for client-side React architecture
+- Environment variable substitution in test scripts
+
+### Verified
+- All M18S5 tests pass with server running
+- Playwright E2E tests implemented for React component validation
+- Metadata validation passed for all M18S5 artifacts
+
+---
 ## Implementation Status
 
 ### Completed Milestones (M1-M15)

@@ -95,3 +95,48 @@
   2.  Draft `milestones/M17/M17S1.md` (Specification for Registry Pattern Enforcement).
 
 **Lead Dev:** "Initiating draft of `milestones/M17/M17.md`. I will ensure it includes the explicit target files identified in our Meeting Room session."
+
+---
+
+# Systems Engineer Report: Global Framework Skills Patching Complete
+
+## Task: Patch Active Framework Skills with Strategic Lifecycle & Collaboration Rules
+
+### Execution Summary:
+
+1.  **Located Source Specifications**: Identified diagnostic reports in `~/devcode/autonomedia-snapshot/docs/meeting_room/` and confirmed the target skills directory at `~/devcode/aef/agent/skills/`.
+2.  **Applied Surgical Patches to Global AEF Skills**:
+    - **`manage-development` (v2.2.0-stable)**:
+      - Added the 15-state Post-Approval State Machine (`IMPLEMENTING -> EVALUATION_REQUIRED -> ROUTING -> PASS/MINOR/COMPLEX/HUMAN`).
+      - Implemented the Repair Loop Tracker (`MAX_AUTO_REPAIR_CYCLES = 3`) with task-isolated counters.
+      - Enabled auto-invocation triggers for `lint-evaluation-gate` and routing to `review-implementation`.
+      - Enforced the unbypassable **Pre-flight Integrity Checklist** (F11.1 - F11.4).
+    - **`manage-roadmap` (v2.0.0)**:
+      - Embedded the **PM Strategic Meeting Room** personas (TPM, SE, TW) as a turn-based discussion loop.
+      - Mandated SE fact-first code inspections before proposing roadmap changes.
+      - Implemented the **High-Priority Warning Gate** for codebase pattern violations.
+      - Enforced the **Surgical Edit Rule** for documentation edits.
+      - Instituted the **Genuinely Invariant Rule**: Backlog-to-active milestone movement now strictly requires explicit user approval.
+    - **`milestone` (v2.6.0)**:
+      - Integrated the **Grill-Me Loop** for requirements elicitation, requiring skeleton checks and structured mapping tables as post-conditions.
+    - **`sync-documentation` (v1.3.0)**:
+      - Mandated full artifact ingestion from `milestones/M{X}/`.
+      - Established the **Surgical Reconcile** duty for synchronizing public documents against verified code states.
+
+### Verification:
+
+- All four modified `SKILL.md` files were confirmed to have valid YAML frontmatter and updated version tags.
+- Helper Python syntax check (`py_compile`) on global scripts passed with no errors.
+
+---
+
+### Modified Global Skill Files & Exact Absolute Paths:
+
+| Skill Path                                                            | Updated Version |
+| :-------------------------------------------------------------------- | :-------------- |
+| `/Users/bparlan/devcode/aef/agent/skills/manage-development/SKILL.md` | `2.2.0-stable`  |
+| `/Users/bparlan/devcode/aef/agent/skills/manage-roadmap/SKILL.md`     | `2.0.0`         |
+| `/Users/bparlan/devcode/aef/agent/skills/milestone/SKILL.md`          | `2.6.0`         |
+| `/Users/bparlan/devcode/aef/agent/skills/sync-documentation/SKILL.md` | `1.3.0`         |
+
+Task complete.
