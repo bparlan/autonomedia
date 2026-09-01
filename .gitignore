@@ -50,3 +50,4 @@ LOG.old
 # OS / noise
 .DS_Store
 *.bak
+*.dmg
