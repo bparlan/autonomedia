@@ -1,0 +1,211 @@
+{
+  "validated_bindings": [
+    {
+      "from": "src/autonomedia/core/worker.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/error_resolver.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/security.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/__init__.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/logger.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/poller.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/posting_routine.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/config/__init__.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/config/settings.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/platform/__init__.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/platform/base.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/utils/verification.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/utils/__init__.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/observability/monitor.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/observability/telegram.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/observability/__init__.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/storage/analysis_storage.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/db/__init__.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/core/analytics/__init__.py",
+      "to": "core_infrastructure",
+      "valid": true,
+      "binding_type": "core_infrastructure"
+    },
+    {
+      "from": "src/autonomedia/ai/planner.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/analysis.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/__init__.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/rewriting/__init__.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/rewriting/gemini.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/rewriting/context.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/rewriting/base.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/openrouter/__init__.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/ollama/__init__.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/moderation/adapter.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/moderation/__init__.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/rewriting/__init__.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/rewriting/gemini.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/rewriting/context.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    },
+    {
+      "from": "src/autonomedia/ai/rewriting/base.py",
+      "to": "ai_engine",
+      "valid": true,
+      "binding_type": "ai_engine_to_core"
+    }
+  ],
+  "violations": [],
+  "total_bindings": 34,
+  "generated_at": "2026-08-26T15:28:37.891950Z"
+}

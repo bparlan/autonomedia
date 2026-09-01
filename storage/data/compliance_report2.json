@@ -1,0 +1,316 @@
+{
+  "compliance_score": 100.0,
+  "violations": [
+    {
+      "file_path": "docs/state.json",
+      "reason": "File should be in src layer, found in UNKNOWN",
+      "expected_layer": "src"
+    },
+    {
+      "file_path": "scripts/platform_management.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/update_platforms.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/test_mastodon_profile.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/ingest_content.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/test_mastodon_compose.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/test_mastodon_post.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/clear_content.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "tests/fixtures/rewrite/golden_master.json",
+      "reason": "File should be in src layer, found in tests",
+      "expected_layer": "src"
+    },
+    {
+      "file_path": "scripts/checks/check_directory_structure.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/checks/verify_legacy_cleanup.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/checks/__init__.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/checks/validate_3layer_pattern.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/reauth/reauth_script.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/migrate_M11_platform_metadata.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/verify_db.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/db_migration.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/db_migration_m12.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/migrate_db.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/db_update.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/migrate_M13_verification_status.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/db_migration_v2.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/init_verifications.sql.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/db_migration_settings.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/migrate_m10.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/db/create_db.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "scripts/monitoring/__init__.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/debug_tables.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/check_platforms.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/check_health.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/check_status.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/verify_telegram.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/check_db.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/verify_health.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/check_data.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/check_all_platforms.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    },
+    {
+      "file_path": "_archive/scripts/checks/run_daily_posting.py",
+      "reason": "File should be in tests layer, found in UNKNOWN",
+      "expected_layer": "tests"
+    }
+  ],
+  "timestamp": "2026-08-26T08:05:01.031422Z",
+  "layers": {
+    "storage_data": [
+      "storage/data/compliance_report2.json",
+      "storage/data/compliance_report.json",
+      "storage/data/purge_report.json",
+      "storage/data/import_validation_report2.json",
+      "storage/data/import_validation_report.json"
+    ],
+    "src_web_templates": [],
+    "src": [
+      "src/__init__.py",
+      "src/database/client.py",
+      "src/database/__init__.py",
+      "src/database/schema.py",
+      "src/web/app.py",
+      "src/autonomedia/__init__.py",
+      "src/autonomedia/platforms/__init__.py",
+      "src/autonomedia/ingestion/content_ingestor.py",
+      "src/autonomedia/core/worker.py",
+      "src/autonomedia/core/error_resolver.py",
+      "src/autonomedia/core/security.py",
+      "src/autonomedia/core/__init__.py",
+      "src/autonomedia/core/logger.py",
+      "src/autonomedia/core/poller.py",
+      "src/autonomedia/core/posting_routine.py",
+      "src/autonomedia/checks/healthcheck.py",
+      "src/autonomedia/agents/__init__.py",
+      "src/autonomedia/content/mention_registry.json",
+      "src/autonomedia/content/__init__.py",
+      "src/autonomedia/browser/provider.py",
+      "src/autonomedia/browser/__init__.py",
+      "src/autonomedia/ai/planner.py",
+      "src/autonomedia/ai/analysis.py",
+      "src/autonomedia/ai/__init__.py",
+      "src/autonomedia/api/health.py",
+      "src/autonomedia/api/__init__.py",
+      "src/autonomedia/api/router.py",
+      "src/autonomedia/apps/__init__.py",
+      "src/autonomedia/platforms/mastodon/__init__.py",
+      "src/autonomedia/platforms/mastodon/selectors.py",
+      "src/autonomedia/platforms/mastodon/task_handler.py",
+      "src/autonomedia/platforms/facebook_pages/__init__.py",
+      "src/autonomedia/platforms/threads/__init__.py",
+      "src/autonomedia/platforms/bluesky/__init__.py",
+      "src/autonomedia/platforms/x/__init__.py",
+      "src/autonomedia/platforms/x/task_handler.py",
+      "src/autonomedia/platforms/linkedin/handler.py",
+      "src/autonomedia/platforms/linkedin/__init__.py",
+      "src/autonomedia/platforms/linkedin/task_handler.py",
+      "src/autonomedia/core/config/__init__.py",
+      "src/autonomedia/core/config/settings.py",
+      "src/autonomedia/core/platform/__init__.py",
+      "src/autonomedia/core/platform/base.py",
+      "src/autonomedia/core/utils/verification.py",
+      "src/autonomedia/core/utils/__init__.py",
+      "src/autonomedia/core/observability/monitor.py",
+      "src/autonomedia/core/observability/telegram.py",
+      "src/autonomedia/core/observability/__init__.py",
+      "src/autonomedia/core/storage/analysis_storage.py",
+      "src/autonomedia/core/db/__init__.py",
+      "src/autonomedia/core/analytics/__init__.py",
+      "src/autonomedia/agents/analytics_assistant/__init__.py",
+      "src/autonomedia/agents/posting_secretary/worker.py",
+      "src/autonomedia/agents/posting_secretary/__init__.py",
+      "src/autonomedia/content/ingestion/__init__.py",
+      "src/autonomedia/content/scheduling/__init__.py",
+      "src/autonomedia/content/transforms/entity_normalizer.py",
+      "src/autonomedia/content/transforms/__init__.py",
+      "src/autonomedia/ai/rewriting/__init__.py",
+      "src/autonomedia/ai/rewriting/gemini.py",
+      "src/autonomedia/ai/rewriting/context.py",
+      "src/autonomedia/ai/rewriting/base.py",
+      "src/autonomedia/ai/openrouter/__init__.py",
+      "src/autonomedia/ai/ollama/__init__.py",
+      "src/autonomedia/ai/moderation/adapter.py",
+      "src/autonomedia/ai/moderation/__init__.py",
+      "src/autonomedia/apps/scheduler/__init__.py",
+      "src/autonomedia/apps/cli/__init__.py",
+      "src/autonomedia/apps/dashboard/__init__.py",
+      "src/autonomedia/apps/worker/posting_executor.py",
+      "src/autonomedia/apps/worker/__init__.py"
+    ],
+    "tests": [
+      "tests/conftest.py",
+      "tests/test_m12_migration.py",
+      "tests/run_scenarios.py",
+      "tests/test_m12_verification.py",
+      "tests/test_m13_migration.py",
+      "tests/test_m13_s3_frontend_rows.py",
+      "tests/test_ai_analysis.py",
+      "tests/test_ingestion.py",
+      "tests/test_m13_s4_verified_state.py",
+      "tests/simple_test.py",
+      "tests/test_m14_routine.py",
+      "tests/test_m13_backend.py",
+      "tests/unit/test_template_structure.py",
+      "tests/unit/dashboard_component_test.py",
+      "tests/unit/test_worker_tracking.py",
+      "tests/unit/test_entity_normalizer.py",
+      "tests/integration/test_m3_api.py",
+      "tests/integration/test_platform_integration.py",
+      "tests/integration/test_m10_runtime.py",
+      "tests/integration/test_m11_self_healing.py",
+      "tests/integration/test_m13_s1_verification_status.py",
+      "tests/integration/test_worker_runtime.py",
+      "tests/integration/test_platform_abstraction_verification.py",
+      "tests/integration/health_endpoint_test.py",
+      "tests/integration/test_platform_abstraction.py",
+      "tests/ai/test_rewrite_pipeline.py",
+      "tests/ai/test_rewrite.py",
+      "tests/M20/test_directory_structure.py",
+      "tests/M20/test_directory_structure_comprehensive.py",
+      "tests/M20/test_3layer_validation.py",
+      "tests/e2e/test_dashboard_crud.py",
+      "tests/e2e/health_dashboard_test.py",
+      "tests/fixtures/rewrite/golden_master.json"
+    ]
+  },
+  "layer_distribution": {
+    "layer_1_infrastructure": 5,
+    "layer_2_application": 71,
+    "layer_3_interface": 0,
+    "tests": 33,
+    "UNKNOWN": 36
+  }
+}

@@ -1,0 +1,663 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "generated_at": "2026-08-26T08:04:58.132690Z",
+    "tool": "m20s1_validate_3layer_pattern",
+    "root_directory": "/Users/bparlan/devcode/autonomedia-snapshot"
+  },
+  "summary": {
+    "total_files_analyzed": 137,
+    "valid_imports": 137,
+    "invalid_imports": 0,
+    "dependency_violations": 0,
+    "overall_compliance_score": 100.0
+  },
+  "layer_compliance": {
+    "storage_data": 100.0,
+    "src_web_templates": 100.0,
+    "src": 100.0
+  },
+  "files_by_layer": {
+    "storage_data": [
+      {
+        "file_path": "src/autonomedia/content/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "storage_data"
+      },
+      {
+        "file_path": "src/autonomedia/core/storage/analysis_storage.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "storage_data"
+      },
+      {
+        "file_path": "src/autonomedia/content/ingestion/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "storage_data"
+      },
+      {
+        "file_path": "src/autonomedia/content/scheduling/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "storage_data"
+      },
+      {
+        "file_path": "src/autonomedia/content/transforms/entity_normalizer.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "storage_data"
+      },
+      {
+        "file_path": "src/autonomedia/content/transforms/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "storage_data"
+      }
+    ],
+    "src_web_templates": [
+      {
+        "file_path": "src/autonomedia/platforms/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/ingestion/content_ingestor.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/worker.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/error_resolver.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/security.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/logger.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/poller.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/posting_routine.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/browser/provider.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/browser/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/apps/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/mastodon/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/mastodon/selectors.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/mastodon/task_handler.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/facebook_pages/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/threads/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/bluesky/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/x/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/x/task_handler.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/linkedin/handler.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/linkedin/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/platforms/linkedin/task_handler.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/config/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/config/settings.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/platform/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/platform/base.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/utils/verification.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/utils/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/observability/monitor.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/observability/telegram.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/observability/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/db/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/core/analytics/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/apps/scheduler/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/apps/cli/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/apps/dashboard/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/apps/worker/posting_executor.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      },
+      {
+        "file_path": "src/autonomedia/apps/worker/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src_web_templates"
+      }
+    ],
+    "src": [
+      {
+        "file_path": "src/autonomedia/checks/healthcheck.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/planner.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/analysis.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/rewriting/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/rewriting/gemini.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/rewriting/context.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/rewriting/base.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/openrouter/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/ollama/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/moderation/adapter.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      },
+      {
+        "file_path": "src/autonomedia/ai/moderation/__init__.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "src"
+      }
+    ],
+    "tests": [
+      {
+        "file_path": "tests/conftest.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/test_m12_migration.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/run_scenarios.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/test_m12_verification.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/test_m13_migration.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/test_m13_s3_frontend_rows.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/test_ai_analysis.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/test_ingestion.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/test_m13_s4_verified_state.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/simple_test.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/test_m14_routine.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/test_m13_backend.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/unit/test_template_structure.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/unit/dashboard_component_test.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/unit/test_worker_tracking.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/unit/test_entity_normalizer.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/integration/test_m3_api.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/integration/test_platform_integration.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/integration/test_m10_runtime.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/integration/test_m11_self_healing.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/integration/test_m13_s1_verification_status.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/integration/test_worker_runtime.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/integration/test_platform_abstraction_verification.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/integration/health_endpoint_test.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/integration/test_platform_abstraction.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/ai/test_rewrite_pipeline.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/ai/test_rewrite.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/M20/test_directory_structure.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/M20/test_directory_structure_comprehensive.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/M20/test_3layer_validation.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/e2e/test_dashboard_crud.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      },
+      {
+        "file_path": "tests/e2e/health_dashboard_test.py",
+        "imports_count": 0,
+        "violations_count": 0,
+        "compliance_score": 100,
+        "layer": "tests"
+      }
+    ]
+  },
+  "violations_by_type": {
+    "ERROR": 0,
+    "WARNING": 0
+  },
+  "layer_rules_enforced": {
+    "storage_data": true,
+    "src_web_templates": true,
+    "src": true,
+    "tests": false
+  }
+}

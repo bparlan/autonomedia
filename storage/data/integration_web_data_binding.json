@@ -1,0 +1,13 @@
+{
+  "validated_bindings": [
+    {
+      "from": "src/web/app.py",
+      "to": "web_application",
+      "valid": true,
+      "binding_type": "web_application"
+    }
+  ],
+  "violations": [],
+  "valid_access": true,
+  "generated_at": "2026-08-26T17:52:29.896550Z"
+}

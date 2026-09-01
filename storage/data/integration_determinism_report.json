@@ -1,0 +1,10 @@
+{
+  "checksum_match": false,
+  "determinism_compliant": false,
+  "matrix1_path": "/Users/bparlan/devcode/autonomedia-snapshot/storage/data/integration_binding_matrix_1.json",
+  "matrix2_path": "/Users/bparlan/devcode/autonomedia-snapshot/storage/data/integration_binding_matrix_2.json",
+  "comparison_time": "2026-08-26T17:52:29.972804Z",
+  "differences": [],
+  "checksum1": "ecfd8a21d385a0f3cedc1fb607acb1eece46cedfa1c2b04a53973deb2067deab",
+  "checksum2": "55438bea3d641942e1546074e9116bf1a521669472aaf5496f8414993f431f7c"
+}

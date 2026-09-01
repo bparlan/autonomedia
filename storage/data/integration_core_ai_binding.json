@@ -1,0 +1,25 @@
+{
+  "validated_bindings": [],
+  "violations": [
+    {
+      "from_module": "tests/ai/test_rewrite_pipeline.py",
+      "to_module": "src.autonomedia.ai.rewriting.context",
+      "violation_type": "cross_layer_import",
+      "severity": "HIGH"
+    },
+    {
+      "from_module": "src/autonomedia/ai/planner.py",
+      "to_module": "src.autonomedia.ai.rewriting.context",
+      "violation_type": "cross_layer_import",
+      "severity": "HIGH"
+    },
+    {
+      "from_module": "src/autonomedia/ai/analysis.py",
+      "to_module": "src.autonomedia.ai.rewriting.gemini",
+      "violation_type": "cross_layer_import",
+      "severity": "HIGH"
+    }
+  ],
+  "total_bindings": 0,
+  "generated_at": "2026-08-26T18:27:29.250817"
+}

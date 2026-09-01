@@ -1,0 +1,201 @@
+{
+  "report_id": "SCR-M20S3-V-20260826152546-f6bc3604",
+  "generation_timestamp": "2026-08-26T15:26:48.125350Z",
+  "verification_session_id": "M20S3-V-20260826152546-f6bc3604",
+  "verification_timestamp": "2026-08-26T15:25:46.671991Z",
+  "executive_summary": {
+    "total_criteria": 0,
+    "verified_criteria": 7,
+    "failed_criteria": 6,
+    "overall_success": false,
+    "compliance_score": 0.5384615384615384,
+    "verification_version": "1.0.0"
+  },
+  "detailed_results": {
+    "verified_criteria": [
+      {
+        "criteria_id": "validate_3layer_pattern.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "validate_3layer_pattern.py",
+          "exit_code": 0,
+          "stdout": "Validation Summary:\n  Total files analyzed: 6248\n  Valid imports: 6248\n  Invalid imports: 0\n  Overall compliance score: 100.0%\n✓ All imports are valid\n",
+          "stderr": "",
+          "timestamp": "2026-08-26T15:26:06.361840Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S1"
+      },
+      {
+        "criteria_id": "check_directory_structure.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "check_directory_structure.py",
+          "exit_code": 0,
+          "stdout": "Repository scan completed. Compliance score: 100.0%\nViolations found: 6341\nReport written to: storage/data/compliance_report.json\n",
+          "stderr": "",
+          "timestamp": "2026-08-26T15:26:07.455584Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S1"
+      },
+      {
+        "criteria_id": "integrity_core_ai.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "integrity_core_ai.py",
+          "exit_code": 0,
+          "stdout": "Core↔AI integration validation completed\n  - Validated bindings: 0\n  - Violations: 3\n",
+          "stderr": "",
+          "timestamp": "2026-08-26T15:26:27.601547Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "integrity_platform_core.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "integrity_platform_core.py",
+          "exit_code": 0,
+          "stdout": "Platform-core isolation validation completed\n  - Validated bindings: 4\n  - Isolation violations: 0\n",
+          "stderr": "",
+          "timestamp": "2026-08-26T15:26:47.901608Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "success_criteria_protocol.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "success_criteria_protocol.py",
+          "error": null,
+          "timestamp": "2026-08-26T15:26:48.111417Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S3"
+      },
+      {
+        "criteria_id": "compliance_reporting.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "compliance_reporting.py",
+          "error": null,
+          "timestamp": "2026-08-26T15:26:48.121676Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S3"
+      },
+      {
+        "criteria_id": "report_generator.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "report_generator.py",
+          "error": null,
+          "timestamp": "2026-08-26T15:26:48.124135Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S3"
+      }
+    ],
+    "failed_criteria": [
+      {
+        "criteria_id": "verify_naming_conventions.py",
+        "status": "ERROR",
+        "details": {
+          "status": "ERROR",
+          "script_name": "verify_naming_conventions.py",
+          "error": "Script not found: verify_naming_conventions.py",
+          "timestamp": "2026-08-26T15:26:07.456170Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S1"
+      },
+      {
+        "criteria_id": "integrity_platform_isolation.py",
+        "status": "FAIL",
+        "details": {
+          "status": "FAIL",
+          "script_name": "integrity_platform_isolation.py",
+          "exit_code": 1,
+          "stdout": "Use --validate flag to run validation\n",
+          "stderr": "",
+          "timestamp": "2026-08-26T15:26:47.968591Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "integrity_runtime_determinism.py",
+        "status": "FAIL",
+        "details": {
+          "status": "FAIL",
+          "script_name": "integrity_runtime_determinism.py",
+          "exit_code": 1,
+          "stdout": "Use either:\n  --validate --output <file>    Generate binding matrix\n  --compare <matrix1> <matrix2>  Compare two binding matrices\n",
+          "stderr": "",
+          "timestamp": "2026-08-26T15:26:48.039849Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "integrity_web_data.py",
+        "status": "FAIL",
+        "details": {
+          "status": "FAIL",
+          "script_name": "integrity_web_data.py",
+          "exit_code": 1,
+          "stdout": "Use --validate flag to run validation\n",
+          "stderr": "",
+          "timestamp": "2026-08-26T15:26:48.108328Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "audit_trail_integration.py",
+        "status": "ERROR",
+        "details": {
+          "status": "ERROR",
+          "script_name": "audit_trail_integration.py",
+          "error": "Script not found: audit_trail_integration.py",
+          "timestamp": "2026-08-26T15:26:48.122037Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S3"
+      },
+      {
+        "criteria_id": "validation_workflow.py",
+        "status": "ERROR",
+        "details": {
+          "status": "ERROR",
+          "script_name": "validation_workflow.py",
+          "error": "No module named 'scripts'",
+          "timestamp": "2026-08-26T15:26:48.124969Z"
+        },
+        "timestamp": "2026-08-26T15:25:46.671991Z",
+        "layer": "M20S3"
+      }
+    ],
+    "verified_layers": [
+      "M20S1",
+      "M20S2",
+      "M20S3"
+    ]
+  },
+  "metadata": {
+    "report_version": "1.0.0",
+    "generated_by": "M20S3 Success Criteria Protocol",
+    "verification_protocol": "FR-SUCCESS_CRITERIA_PROTOCOL",
+    "audit_trail_reference": "ATR-M20S3-V-20260826152546-f6bc3604"
+  }
+}

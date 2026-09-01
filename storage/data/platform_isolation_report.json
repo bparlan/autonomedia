@@ -1,0 +1,8 @@
+{
+  "fully_isolated_platforms": [
+    "platforms"
+  ],
+  "cross_platform_violations": [],
+  "isolation_score": 100.0,
+  "generated_at": "2026-08-26T15:28:37.205483Z"
+}

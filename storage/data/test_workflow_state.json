@@ -1,0 +1,51 @@
+{
+  "workflow_id": "validation_workflow_2026-08-26T18:28:47.368521",
+  "executed_steps": [
+    "validate_success_criteria",
+    "generate_compliance_report",
+    "integrate_audit_trails",
+    "generate_verification_reports"
+  ],
+  "step_results": {
+    "validate_success_criteria": {
+      "status": "completed",
+      "result": {
+        "verified_criteria": [
+          "m20s1_3layer_pattern",
+          "m20s2_integration_bindings"
+        ],
+        "overall_success": true,
+        "compliance_score": 1.0
+      },
+      "timestamp": "2026-08-26T18:28:47.368531"
+    },
+    "generate_compliance_report": {
+      "status": "completed",
+      "result": {
+        "report": "compliance",
+        "status": "success"
+      },
+      "timestamp": "2026-08-26T18:28:47.368535"
+    },
+    "integrate_audit_trails": {
+      "status": "completed",
+      "result": [
+        {
+          "component": "audit_trail",
+          "status": "success"
+        }
+      ],
+      "timestamp": "2026-08-26T18:28:47.368537"
+    },
+    "generate_verification_reports": {
+      "status": "completed",
+      "result": [
+        "/tmp/test.html",
+        "/tmp/test.pdf"
+      ],
+      "timestamp": "2026-08-26T18:28:47.368539"
+    }
+  },
+  "workflow_status": "completed",
+  "integrity_timestamp": "2026-08-26T18:28:47.368554"
+}

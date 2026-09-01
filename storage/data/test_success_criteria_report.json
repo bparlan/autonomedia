@@ -1,0 +1,219 @@
+{
+  "report_id": "SCR-M20S3-V-20260826153332-06607126",
+  "generation_timestamp": "2026-08-26T15:33:32.927894Z",
+  "verification_session_id": "M20S3-V-20260826153332-06607126",
+  "verification_timestamp": "2026-08-26T15:33:32.907621Z",
+  "executive_summary": {
+    "total_criteria": 0,
+    "verified_criteria": 12,
+    "failed_criteria": 1,
+    "overall_success": false,
+    "compliance_score": 0.9230769230769231,
+    "verification_version": "1.0.0"
+  },
+  "detailed_results": {
+    "verified_criteria": [
+      {
+        "criteria_id": "check_directory_structure",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "criteria_id": "check_directory_structure",
+          "verification_details": {
+            "check_type": "directory_structure_audit",
+            "compliance": true,
+            "details": "M20S1 criteria check_directory_structure passed deterministic verification"
+          },
+          "timestamp": "2026-08-26T15:33:32.907677Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S1"
+      },
+      {
+        "criteria_id": "validate_3layer_pattern",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "criteria_id": "validate_3layer_pattern",
+          "verification_details": {
+            "check_type": "directory_structure_audit",
+            "compliance": true,
+            "details": "M20S1 criteria validate_3layer_pattern passed deterministic verification"
+          },
+          "timestamp": "2026-08-26T15:33:32.908101Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S1"
+      },
+      {
+        "criteria_id": "verify_naming_conventions",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "criteria_id": "verify_naming_conventions",
+          "verification_details": {
+            "check_type": "directory_structure_audit",
+            "compliance": true,
+            "details": "M20S1 criteria verify_naming_conventions passed deterministic verification"
+          },
+          "timestamp": "2026-08-26T15:33:32.908274Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S1"
+      },
+      {
+        "criteria_id": "integrity_core_ai_check",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "criteria_id": "integrity_core_ai_check",
+          "verification_details": {
+            "check_type": "integration_binding_validation",
+            "compliance": true,
+            "details": "M20S2 criteria integrity_core_ai_check passed deterministic verification"
+          },
+          "timestamp": "2026-08-26T15:33:32.908432Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "integrity_platform_core_check",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "criteria_id": "integrity_platform_core_check",
+          "verification_details": {
+            "check_type": "integration_binding_validation",
+            "compliance": true,
+            "details": "M20S2 criteria integrity_platform_core_check passed deterministic verification"
+          },
+          "timestamp": "2026-08-26T15:33:32.908559Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "integrity_platform_isolation_check",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "criteria_id": "integrity_platform_isolation_check",
+          "verification_details": {
+            "check_type": "integration_binding_validation",
+            "compliance": true,
+            "details": "M20S2 criteria integrity_platform_isolation_check passed deterministic verification"
+          },
+          "timestamp": "2026-08-26T15:33:32.908672Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "integrity_runtime_determinism_check",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "criteria_id": "integrity_runtime_determinism_check",
+          "verification_details": {
+            "check_type": "integration_binding_validation",
+            "compliance": true,
+            "details": "M20S2 criteria integrity_runtime_determinism_check passed deterministic verification"
+          },
+          "timestamp": "2026-08-26T15:33:32.908780Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "integrity_web_data_check",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "criteria_id": "integrity_web_data_check",
+          "verification_details": {
+            "check_type": "integration_binding_validation",
+            "compliance": true,
+            "details": "M20S2 criteria integrity_web_data_check passed deterministic verification"
+          },
+          "timestamp": "2026-08-26T15:33:32.908921Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S2"
+      },
+      {
+        "criteria_id": "success_criteria_protocol.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "success_criteria_protocol.py",
+          "error": null,
+          "timestamp": "2026-08-26T15:33:32.915649Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S3"
+      },
+      {
+        "criteria_id": "compliance_reporting.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "compliance_reporting.py",
+          "error": null,
+          "timestamp": "2026-08-26T15:33:32.924521Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S3"
+      },
+      {
+        "criteria_id": "audit_trail_integration.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "audit_trail_integration.py",
+          "error": null,
+          "timestamp": "2026-08-26T15:33:32.925246Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S3"
+      },
+      {
+        "criteria_id": "report_generator.py",
+        "status": "PASS",
+        "details": {
+          "status": "PASS",
+          "script_name": "report_generator.py",
+          "error": null,
+          "timestamp": "2026-08-26T15:33:32.926991Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S3"
+      }
+    ],
+    "failed_criteria": [
+      {
+        "criteria_id": "validation_workflow.py",
+        "status": "ERROR",
+        "details": {
+          "status": "ERROR",
+          "script_name": "validation_workflow.py",
+          "error": "No module named 'scripts'",
+          "timestamp": "2026-08-26T15:33:32.927543Z"
+        },
+        "timestamp": "2026-08-26T15:33:32.907621Z",
+        "layer": "M20S3"
+      }
+    ],
+    "verified_layers": [
+      "M20S1",
+      "M20S2",
+      "M20S3"
+    ]
+  },
+  "metadata": {
+    "report_version": "1.0.0",
+    "generated_by": "M20S3 Success Criteria Protocol",
+    "verification_protocol": "FR-SUCCESS_CRITERIA_PROTOCOL",
+    "audit_trail_reference": "ATR-M20S3-V-20260826153332-06607126"
+  }
+}

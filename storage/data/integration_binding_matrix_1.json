@@ -1,0 +1,8 @@
+{
+  "core_to_ai": [],
+  "ai_to_core": [],
+  "platform_to_core": [],
+  "core_to_platform": [],
+  "web_to_data": [],
+  "data_to_web": []
+}

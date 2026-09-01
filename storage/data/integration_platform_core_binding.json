@@ -1,0 +1,31 @@
+{
+  "validated_bindings": [
+    {
+      "from_module": "tests/integration/test_platform_abstraction_verification.py",
+      "to_module": "src.autonomedia.platforms.linkedin.task_handler",
+      "binding_type": "interface",
+      "valid": true
+    },
+    {
+      "from_module": "tests/integration/test_platform_abstraction_verification.py",
+      "to_module": "src.autonomedia.platforms.mastodon.task_handler",
+      "binding_type": "interface",
+      "valid": true
+    },
+    {
+      "from_module": "tests/integration/test_platform_abstraction_verification.py",
+      "to_module": "src.autonomedia.platforms.x.task_handler",
+      "binding_type": "interface",
+      "valid": true
+    },
+    {
+      "from_module": "src/autonomedia/apps/worker/posting_executor.py",
+      "to_module": "src.autonomedia.platforms.mastodon.task_handler",
+      "binding_type": "interface",
+      "valid": true
+    }
+  ],
+  "violations": [],
+  "total_bindings": 4,
+  "generated_at": "2026-08-26T18:27:50.885776"
+}

@@ -1,0 +1,68 @@
+{
+  "validation_round": "2026-08-26T15:28:37.823322Z",
+  "scripts_executed": [
+    {
+      "script": "scripts/checks/integrity_core_ai.py",
+      "output_file": "storage/data/integration_integrity_core_ai_binding.json",
+      "exit_code": 0,
+      "success": true
+    },
+    {
+      "script": "scripts/checks/integrity_platform_core.py",
+      "output_file": "storage/data/integration_integrity_platform_core_binding.json",
+      "exit_code": 0,
+      "success": true
+    },
+    {
+      "script": "scripts/checks/integrity_web_data.py",
+      "output_file": "storage/data/integration_integrity_web_data_binding.json",
+      "exit_code": 0,
+      "success": true
+    },
+    {
+      "script": "scripts/checks/integrity_platform_isolation.py",
+      "output_file": "storage/data/integration_integrity_platform_isolation_binding.json",
+      "exit_code": 0,
+      "success": true
+    }
+  ],
+  "binding_results": {
+    "integrity_core_ai": {
+      "exit_code": 0,
+      "binding_count": 34,
+      "violation_count": 0,
+      "isolation_score": 100.0,
+      "valid_access": true,
+      "output_file": "storage/data/integration_integrity_core_ai_binding.json",
+      "checksum": "d84ce43af489f27e195fd16e3721f5202f097b3fb131e76041f75f46c8936362"
+    },
+    "integrity_platform_core": {
+      "exit_code": 0,
+      "binding_count": 31,
+      "violation_count": 0,
+      "isolation_score": 100.0,
+      "valid_access": true,
+      "output_file": "storage/data/integration_integrity_platform_core_binding.json",
+      "checksum": "cea326bd3e44e0f6440855f0f40fbef46eccc4605e0ce7ae145c6fba44617026"
+    },
+    "integrity_web_data": {
+      "exit_code": 0,
+      "binding_count": 1,
+      "violation_count": 0,
+      "isolation_score": 100.0,
+      "valid_access": true,
+      "output_file": "storage/data/integration_integrity_web_data_binding.json",
+      "checksum": "aea3d556dfb209984e799ea826bc35d955473904be86fe0cb244668cda13aef5"
+    },
+    "integrity_platform_isolation": {
+      "exit_code": 0,
+      "binding_count": 0,
+      "violation_count": 0,
+      "isolation_score": 100.0,
+      "valid_access": true,
+      "output_file": "storage/data/integration_integrity_platform_isolation_binding.json",
+      "checksum": "370b3a5740ef179207b3404edb06153993c8005ac586eb3af3ed02fa79f98d15"
+    }
+  },
+  "generated_at": "2026-08-26T15:28:37.823335Z"
+}
