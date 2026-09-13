@@ -15,96 +15,6 @@
         "kind": "main",
         "sessionId": "01a09889-ae31-71fa-9287-1d9e86bb02ce"
       }
-    },
-    "topology/hosts/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9": {
-      "key": "topology/hosts/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9",
-      "value": {
-        "format": 1,
-        "id": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "rootId": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "identity": {
-          "id": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-          "name": "main",
-          "kind": "main",
-          "sessionId": "01a09889-ae31-71fa-9287-1d9e86bb02ce"
-        },
-        "startedAt": 1789265569717,
-        "updatedAt": 1789300610819,
-        "expiresAt": 1789300625819
-      },
-      "version": 7089,
-      "updatedAt": 1789300610821,
-      "updatedBy": {
-        "id": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "name": "main",
-        "kind": "main",
-        "sessionId": "01a09889-ae31-71fa-9287-1d9e86bb02ce"
-      }
-    },
-    "sessions/01a09889-ae31-71fa-9287-1d9e86bb02ce": {
-      "key": "sessions/01a09889-ae31-71fa-9287-1d9e86bb02ce",
-      "value": {
-        "id": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "name": "AS-2",
-        "label": "AS-2",
-        "kind": "peer",
-        "status": "idle",
-        "runner": "pi",
-        "transport": "host",
-        "cwd": "/Users/bparlan/devcode/autonomedia-snapshot",
-        "sessionId": "01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "model": "freellmapi-anthropic/claude-sonnet-4-5",
-        "thinking": "minimal",
-        "startedAt": 1789265569717,
-        "updatedAt": 1789300610819,
-        "pendingMessages": false,
-        "local": false
-      },
-      "version": 7089,
-      "updatedAt": 1789300610825,
-      "updatedBy": {
-        "id": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "name": "main",
-        "kind": "main",
-        "sessionId": "01a09889-ae31-71fa-9287-1d9e86bb02ce"
-      }
-    },
-    "topology/participants/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9": {
-      "key": "topology/participants/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9",
-      "value": {
-        "format": 1,
-        "id": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "kind": "root",
-        "rootId": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "ownerHostId": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "ownerIdentityId": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "name": "main",
-        "status": "idle",
-        "runner": "pi",
-        "transport": "host",
-        "capabilities": [
-          "steer",
-          "followUp",
-          "fabric"
-        ],
-        "cwd": "/Users/bparlan/devcode/autonomedia-snapshot",
-        "sessionId": "01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "model": "freellmapi-anthropic/claude-sonnet-4-5",
-        "thinking": "minimal",
-        "startedAt": 1789265569717,
-        "updatedAt": 1789300610819,
-        "pendingMessages": false,
-        "controlProtocol": "v1",
-        "label": "AS-2"
-      },
-      "version": 7089,
-      "updatedAt": 1789300610828,
-      "updatedBy": {
-        "id": "session:01a09889-ae31-71fa-9287-1d9e86bb02ce",
-        "name": "main",
-        "kind": "main",
-        "sessionId": "01a09889-ae31-71fa-9287-1d9e86bb02ce"
-      }
     }
   },
   "versions": {
@@ -112,13 +22,16 @@
     "topology/hosts/bf90034c80c011e90701b29d2f424f5e2f5bc9566fbf586cffe4f569c9660894": 18,
     "sessions/01a09887-a5b4-7a1c-8d2c-0ab99d89c7a0": 17,
     "topology/participants/bf90034c80c011e90701b29d2f424f5e2f5bc9566fbf586cffe4f569c9660894": 18,
-    "topology/hosts/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9": 7089,
-    "sessions/01a09889-ae31-71fa-9287-1d9e86bb02ce": 7089,
-    "topology/participants/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9": 7089
+    "topology/hosts/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9": 7283,
+    "sessions/01a09889-ae31-71fa-9287-1d9e86bb02ce": 7282,
+    "topology/participants/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9": 7283
   },
   "tombstoneOrder": [
     "sessions/01a09887-a5b4-7a1c-8d2c-0ab99d89c7a0",
     "topology/participants/bf90034c80c011e90701b29d2f424f5e2f5bc9566fbf586cffe4f569c9660894",
-    "topology/hosts/bf90034c80c011e90701b29d2f424f5e2f5bc9566fbf586cffe4f569c9660894"
+    "topology/hosts/bf90034c80c011e90701b29d2f424f5e2f5bc9566fbf586cffe4f569c9660894",
+    "sessions/01a09889-ae31-71fa-9287-1d9e86bb02ce",
+    "topology/participants/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9",
+    "topology/hosts/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9"
   ]
 }
