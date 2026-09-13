@@ -29,11 +29,11 @@
           "sessionId": "01a09bef-ccf1-7125-a163-29d3a8cc2bca"
         },
         "startedAt": 1789322634989,
-        "updatedAt": 1789324095287,
-        "expiresAt": 1789324110287
+        "updatedAt": 1789324995476,
+        "expiresAt": 1789325010476
       },
-      "version": 305,
-      "updatedAt": 1789324095287,
+      "version": 485,
+      "updatedAt": 1789324995477,
       "updatedBy": {
         "id": "session:01a09bef-ccf1-7125-a163-29d3a8cc2bca",
         "name": "main",
@@ -56,12 +56,12 @@
         "model": "freellmapi-anthropic/claude-sonnet-4-5",
         "thinking": "minimal",
         "startedAt": 1789322634989,
-        "updatedAt": 1789324095287,
+        "updatedAt": 1789324995476,
         "pendingMessages": false,
         "local": false
       },
-      "version": 305,
-      "updatedAt": 1789324095288,
+      "version": 485,
+      "updatedAt": 1789324995477,
       "updatedBy": {
         "id": "session:01a09bef-ccf1-7125-a163-29d3a8cc2bca",
         "name": "main",
@@ -92,13 +92,13 @@
         "model": "freellmapi-anthropic/claude-sonnet-4-5",
         "thinking": "minimal",
         "startedAt": 1789322634989,
-        "updatedAt": 1789324095287,
+        "updatedAt": 1789324995476,
         "pendingMessages": false,
         "controlProtocol": "v1",
         "label": "AS-3"
       },
-      "version": 305,
-      "updatedAt": 1789324095289,
+      "version": 485,
+      "updatedAt": 1789324995479,
       "updatedBy": {
         "id": "session:01a09bef-ccf1-7125-a163-29d3a8cc2bca",
         "name": "main",
@@ -115,9 +115,9 @@
     "topology/hosts/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9": 7283,
     "sessions/01a09889-ae31-71fa-9287-1d9e86bb02ce": 7282,
     "topology/participants/21bb13fdb2100a8865eaaf9cda1a18fe6bbdd914a529247becb217392c015af9": 7283,
-    "topology/hosts/46099e80dbd11de2268db60dd42c1fb0e1383242032498878bb584f615374a80": 305,
-    "sessions/01a09bef-ccf1-7125-a163-29d3a8cc2bca": 305,
-    "topology/participants/46099e80dbd11de2268db60dd42c1fb0e1383242032498878bb584f615374a80": 305
+    "topology/hosts/46099e80dbd11de2268db60dd42c1fb0e1383242032498878bb584f615374a80": 485,
+    "sessions/01a09bef-ccf1-7125-a163-29d3a8cc2bca": 485,
+    "topology/participants/46099e80dbd11de2268db60dd42c1fb0e1383242032498878bb584f615374a80": 485
   },
   "tombstoneOrder": [
     "sessions/01a09887-a5b4-7a1c-8d2c-0ab99d89c7a0",
