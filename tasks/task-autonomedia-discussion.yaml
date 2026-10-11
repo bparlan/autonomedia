@@ -1,0 +1,50 @@
+id: autonomedia-discussion
+name: Autonomedia App Discussion
+type: discussion
+priority: 7
+description: >-
+  Team discussion on autonomedia app concept: a Buffer-like social media
+  scheduler with continuous posting. Identify major functions needed for
+  continuous usage.
+failure_handling: abort
+expected_output: >-
+  reports/autonomedia-discussion.md — the team's consolidated report.
+
+phases:
+  - name: skeptic-review
+    runner: llm
+    member: skeptic
+    agent_type: task
+    prompt_file: prompts/autonomedia-discussion-skeptic.md
+    output: reports/.handoff/autonomedia-discussion-skeptic.md
+    memory_limit_mb: 64
+    order: 1
+
+  - name: architect-review
+    runner: llm
+    member: architect
+    agent_type: task
+    prompt_file: prompts/autonomedia-discussion-architect.md
+    output: reports/.handoff/autonomedia-discussion-architect.md
+    memory_limit_mb: 64
+    order: 2
+
+  - name: pragmatist-review
+    runner: llm
+    member: pragmatist
+    agent_type: task
+    prompt_file: prompts/autonomedia-discussion-pragmatist.md
+    output: reports/.handoff/autonomedia-discussion-pragmatist.md
+    memory_limit_mb: 64
+    order: 3
+
+  - name: synthesis
+    runner: llm
+    member: pragmatist
+    agent_type: task
+    prompt_file: prompts/autonomedia-discussion-synthesis.md
+    output: reports/autonomedia-discussion.md
+    memory_limit_mb: 64
+    order: 4
+
+order: 1

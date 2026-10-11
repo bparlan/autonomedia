@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "project": "team-skill",
+  "loop_active": false,
+  "current_task_index": 0,
+  "completed_tasks": [],
+  "failed_tasks": [],
+  "blocked_tasks": [],
+  "last_execution": null,
+  "task_archive": "tasks",
+  "total_tasks": 0,
+  "health_score": {},
+  "circuit_breaker": {}
+}
